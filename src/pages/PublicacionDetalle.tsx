@@ -277,14 +277,6 @@ const PublicacionDetalle = () => {
             >
               + Crear publicación para hacer match
             </Button>
-            <Button
-              className="w-full"
-              onClick={() => createMatch()}
-              disabled={loadingMatch}
-            >
-              <Handshake className="mr-2 h-4 w-4" />
-              {loadingMatch ? "Enviando..." : "Match sin vincular publicación"}
-            </Button>
           </div>
         </DialogContent>
       </Dialog>
