@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw } from "lucide-react";
+import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
@@ -44,6 +45,7 @@ const getOriginDestination = (data: Json, opType: string) => {
 
 const Tablero = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -100,6 +102,9 @@ const Tablero = () => {
             <p className="text-sm text-muted-foreground">Publicaciones activas</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="ghost" size="icon" onClick={() => { signOut(); navigate("/"); }}>
+              <LogOut className="h-4 w-4" />
+            </Button>
             <Button variant="ghost" size="icon" onClick={fetchPublications}>
               <RefreshCw className="h-4 w-4" />
             </Button>
