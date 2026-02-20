@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Truck, Package, Users } from "lucide-react";
 
 const operations = [
@@ -58,6 +58,12 @@ const SeleccionarOperacion = () => {
               </div>
             </button>
           ))}
+        </div>
+
+        <div className="mt-6 text-center">
+          <Link to="/tablero" className="text-sm font-medium text-primary hover:underline">
+            Ver tablero de publicaciones →
+          </Link>
         </div>
       </div>
     </div>
