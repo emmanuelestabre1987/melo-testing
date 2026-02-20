@@ -217,12 +217,10 @@ const PublicacionDetalle = () => {
           </Card>
 
           {/* Match button */}
-          {!isOwn && (
-            <Button onClick={handleMatchClick} className="w-full" size="lg">
-              <Handshake className="mr-2 h-5 w-5" />
-              Hacer match
-            </Button>
-          )}
+          <Button onClick={handleMatchClick} className="w-full" size="lg">
+            <Handshake className="mr-2 h-5 w-5" />
+            Hacer match
+          </Button>
         </div>
       </div>
 
