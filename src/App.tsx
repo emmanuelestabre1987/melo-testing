@@ -2,7 +2,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "./pages/Login";
 import SeleccionarOperacion from "./pages/SeleccionarOperacion";
 import Transportar from "./pages/Transportar";
@@ -15,21 +17,23 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/seleccionar-operacion" element={<SeleccionarOperacion />} />
-          <Route path="/transportar" element={<Transportar />} />
-          <Route path="/dar-carga" element={<DarCarga />} />
-          <Route path="/viajar" element={<Viajar />} />
-          <Route path="/publicado" element={<Publicado />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/seleccionar-operacion" element={<ProtectedRoute><SeleccionarOperacion /></ProtectedRoute>} />
+            <Route path="/transportar" element={<ProtectedRoute><Transportar /></ProtectedRoute>} />
+            <Route path="/dar-carga" element={<ProtectedRoute><DarCarga /></ProtectedRoute>} />
+            <Route path="/viajar" element={<ProtectedRoute><Viajar /></ProtectedRoute>} />
+            <Route path="/publicado" element={<ProtectedRoute><Publicado /></ProtectedRoute>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
