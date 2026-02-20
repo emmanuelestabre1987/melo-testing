@@ -17,11 +17,11 @@ const Publicado = () => {
           Te avisaremos cuando haya coincidencias.
         </p>
         <div className="space-y-3">
-          <Button onClick={() => navigate("/seleccionar-operacion")} className="w-full" size="lg">
-            Nueva operación
+          <Button onClick={() => navigate("/tablero")} className="w-full" size="lg">
+            Ir al tablero
           </Button>
-          <Button onClick={() => navigate("/")} variant="outline" className="w-full" size="lg">
-            Volver al inicio
+          <Button onClick={() => navigate("/seleccionar-operacion")} variant="outline" className="w-full" size="lg">
+            Nueva operación
           </Button>
         </div>
       </div>

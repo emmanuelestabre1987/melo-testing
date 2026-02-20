@@ -133,7 +133,7 @@ const Tablero = () => {
               const fecha = getField(pub.data, "fecha");
 
               return (
-                <Card key={pub.id} className="overflow-hidden border-border shadow-card hover:shadow-card-hover transition-all">
+                <Card key={pub.id} className="overflow-hidden border-border shadow-card hover:shadow-card-hover transition-all cursor-pointer" onClick={() => navigate(`/publicacion/${pub.id}`)}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.gradient}`}>
@@ -155,7 +155,7 @@ const Tablero = () => {
                           </div>
                         )}
                         <div className="mt-2 flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">por {pub.profile_name}</span>
+                          <span className="text-xs text-muted-foreground">por {pub.profile_name} · {pub.id.slice(0, 8).toUpperCase()}</span>
                           {(frecuencia || fecha) && (
                             <span className="flex items-center gap-1 text-xs text-muted-foreground">
                               <Calendar className="h-3 w-3" />

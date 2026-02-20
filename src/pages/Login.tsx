@@ -33,7 +33,7 @@ const Login = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate("/seleccionar-operacion");
+        navigate("/tablero");
       }
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
