@@ -11,6 +11,7 @@ import Transportar from "./pages/Transportar";
 import DarCarga from "./pages/DarCarga";
 import Viajar from "./pages/Viajar";
 import Publicado from "./pages/Publicado";
+import Tablero from "./pages/Tablero";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/dar-carga" element={<ProtectedRoute><DarCarga /></ProtectedRoute>} />
             <Route path="/viajar" element={<ProtectedRoute><Viajar /></ProtectedRoute>} />
             <Route path="/publicado" element={<ProtectedRoute><Publicado /></ProtectedRoute>} />
+            <Route path="/tablero" element={<ProtectedRoute><Tablero /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
