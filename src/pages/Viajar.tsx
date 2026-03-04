@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import FrecuenciaStep, { FrecuenciaData, isFrecuenciaValid } from "@/components/FrecuenciaStep";
 
 const Viajar = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const Viajar = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [cantidadPersonas, setCantidadPersonas] = useState("");
-  const [fecha, setFecha] = useState("");
+  const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
   const [saving, setSaving] = useState(false);
@@ -28,10 +29,14 @@ const Viajar = () => {
   const handleNext = async () => {
     if (step === totalSteps) {
       setSaving(true);
+      const frecuenciaData = {
+        ...frecuencia,
+        fecha: frecuencia.fecha ? frecuencia.fecha.toISOString() : undefined,
+      };
       const { error } = await supabase.from("publications").insert({
         user_id: user!.id,
         operation_type: "viajar",
-        data: { cantidadPersonas, fecha, origen, destino },
+        data: JSON.parse(JSON.stringify({ cantidadPersonas, frecuencia: frecuenciaData, origen, destino })),
       });
       setSaving(false);
       if (error) {
@@ -48,7 +53,7 @@ const Viajar = () => {
     if (saving) return true;
     switch (step) {
       case 1: return !cantidadPersonas;
-      case 2: return !fecha;
+      case 2: return !isFrecuenciaValid(frecuencia);
       case 3: return !origen;
       case 4: return !destino;
       default: return false;
@@ -72,10 +77,7 @@ const Viajar = () => {
         </div>
       )}
       {step === 2 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Fecha de viaje</h3>
-          <div className="space-y-2"><Label>¿Cuándo querés viajar?</Label><Input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} /></div>
-        </div>
+        <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
       {step === 3 && (
         <div className="space-y-4">
