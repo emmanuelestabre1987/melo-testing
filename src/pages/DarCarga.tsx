@@ -8,6 +8,7 @@ import { Package, Box, Boxes } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import FrecuenciaStep, { FrecuenciaData, isFrecuenciaValid } from "@/components/FrecuenciaStep";
 
 const DarCarga = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const DarCarga = () => {
   const [m3, setM3] = useState("");
   const [origen, setOrigen] = useState("");
   const [destino, setDestino] = useState("");
-  const [frecuencia, setFrecuencia] = useState("");
+  const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [saving, setSaving] = useState(false);
 
   const totalSteps = tipoEnvio === "encomienda" ? 5 : 7;
@@ -34,11 +35,15 @@ const DarCarga = () => {
   const handleNext = async () => {
     if (step === totalSteps) {
       setSaving(true);
-      const { error } = await supabase.from("publications").insert({
+      const frecuenciaData = {
+        ...frecuencia,
+        fecha: frecuencia.fecha ? frecuencia.fecha.toISOString() : undefined,
+      };
+      const { error } = await supabase.from("publications").insert([{
         user_id: user!.id,
         operation_type: "dar-carga",
-        data: { tipoEnvio, tipoCarga, unidad, cantidad, m3, origen, destino, frecuencia },
-      });
+        data: JSON.parse(JSON.stringify({ tipoEnvio, tipoCarga, unidad, cantidad, m3, origen, destino, frecuencia: frecuenciaData })),
+      }]);
       setSaving(false);
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -57,6 +62,7 @@ const DarCarga = () => {
       case 2: return !tipoCarga;
       case 3: return tipoEnvio === "encomienda" ? !m3 : !unidad;
       case 4: return tipoEnvio === "encomienda" ? !origen : !cantidad;
+      case 7: return !isFrecuenciaValid(frecuencia);
       default: return false;
     }
   };
@@ -122,12 +128,7 @@ const DarCarga = () => {
         </div>
       )}
       {tipoEnvio === "carga-general" && step === 7 && (
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">Frecuencia</h3>
-          {["Fecha específica", "Todos los lunes", "Lunes a viernes", "Semanal"].map((f) => (
-            <OptionCard key={f} label={f} selected={frecuencia === f} onClick={() => setFrecuencia(f)} />
-          ))}
-        </div>
+        <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
   );
