@@ -25,7 +25,9 @@ const DarCarga = () => {
   const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [saving, setSaving] = useState(false);
 
-  const totalSteps = tipoEnvio === "encomienda" ? 5 : 7;
+  // encomienda: tipo(1) → tipoCarga(2) → m3(3) → origen(4) → destino(5) → frecuencia(6)
+  // carga-general: tipo(1) → tipoCarga(2) → unidad(3) → cantidad(4) → origen(5) → destino(6) → frecuencia(7)
+  const totalSteps = tipoEnvio === "encomienda" ? 6 : 7;
 
   const handleBack = () => {
     if (step === 1) navigate("/seleccionar-operacion");
@@ -62,6 +64,8 @@ const DarCarga = () => {
       case 2: return !tipoCarga;
       case 3: return tipoEnvio === "encomienda" ? !m3 : !unidad;
       case 4: return tipoEnvio === "encomienda" ? !origen : !cantidad;
+      case 5: return tipoEnvio === "encomienda" ? !destino : !origen;
+      case 6: return tipoEnvio === "encomienda" ? !isFrecuenciaValid(frecuencia) : !destino;
       case 7: return !isFrecuenciaValid(frecuencia);
       default: return false;
     }
@@ -127,7 +131,7 @@ const DarCarga = () => {
           <div className="space-y-2"><Label>Dirección o referencia</Label><Input placeholder="Ej: Córdoba Capital" value={destino} onChange={(e) => setDestino(e.target.value)} /></div>
         </div>
       )}
-      {tipoEnvio === "carga-general" && step === 7 && (
+      {((tipoEnvio === "encomienda" && step === 6) || (tipoEnvio === "carga-general" && step === 7)) && (
         <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
