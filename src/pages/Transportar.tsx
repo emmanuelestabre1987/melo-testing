@@ -8,6 +8,7 @@ import { Package, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+import FrecuenciaStep, { FrecuenciaData, isFrecuenciaValid } from "@/components/FrecuenciaStep";
 
 const Transportar = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Transportar = () => {
   const [tipoCarga, setTipoCarga] = useState("");
   const [ruta, setRuta] = useState({ origen: "", destino: "" });
   const [tipoVehiculo, setTipoVehiculo] = useState("");
-  const [frecuencia, setFrecuencia] = useState("");
+  const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [espacio, setEspacio] = useState("");
   const [posicionPallet, setPosicionPallet] = useState("");
   const [saving, setSaving] = useState(false);
@@ -32,11 +33,15 @@ const Transportar = () => {
   const handleNext = async () => {
     if (step === totalSteps) {
       setSaving(true);
-      const { error } = await supabase.from("publications").insert({
+      const frecuenciaData = {
+        ...frecuencia,
+        fecha: frecuencia.fecha ? frecuencia.fecha.toISOString() : undefined,
+      };
+      const { error } = await supabase.from("publications").insert([{
         user_id: user!.id,
         operation_type: "transportar",
-        data: { tipoCarga, ruta, tipoVehiculo, frecuencia, espacio, posicionPallet },
-      });
+        data: JSON.parse(JSON.stringify({ tipoCarga, ruta, tipoVehiculo, frecuencia: frecuenciaData, espacio, posicionPallet })),
+      }]);
       setSaving(false);
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -54,7 +59,7 @@ const Transportar = () => {
       case 1: return !tipoCarga;
       case 2: return !ruta.origen || !ruta.destino;
       case 3: return !tipoVehiculo;
-      case 4: return !frecuencia;
+      case 4: return !isFrecuenciaValid(frecuencia);
       case 5: return tipoCarga === "carga" && !espacio;
       default: return false;
     }
@@ -93,12 +98,7 @@ const Transportar = () => {
         </div>
       )}
       {step === 4 && (
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold text-foreground">Frecuencia de operación</h3>
-          {["Fecha específica", "Todos los lunes", "Lunes a viernes", "Semanal", "Quincenal"].map((f) => (
-            <OptionCard key={f} label={f} selected={frecuencia === f} onClick={() => setFrecuencia(f)} />
-          ))}
-        </div>
+        <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
       {step === 5 && (
         <div className="space-y-4">
