@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
 import AppLayout from "@/components/AppLayout";
+import TableroFilters, { EMPTY_FILTERS, type PublicationFilters } from "@/components/TableroFilters";
 
 interface Publication {
   id: string;
@@ -47,11 +48,12 @@ const getOriginDestination = (data: Json, opType: string) => {
 
 const Tablero = () => {
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { toast } = useToast();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
+  const [filters, setFilters] = useState<PublicationFilters>(EMPTY_FILTERS);
   const toastShownRef = useRef(false);
 
   const fetchPublications = async () => {
@@ -67,7 +69,6 @@ const Tablero = () => {
       return;
     }
 
-    // Fetch profile names
     const userIds = [...new Set(data.map((p) => p.user_id))];
     const { data: profiles } = await supabase
       .from("profiles")
@@ -124,81 +125,120 @@ const Tablero = () => {
     }
   }, [pendingCount]);
 
+  // Derive unique origins/destinations for filter options
+  const { origins, destinations } = useMemo(() => {
+    const origSet = new Set<string>();
+    const destSet = new Set<string>();
+    publications.forEach((pub) => {
+      const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
+      if (origen) origSet.add(origen);
+      if (destino) destSet.add(destino);
+    });
+    return { origins: [...origSet].sort(), destinations: [...destSet].sort() };
+  }, [publications]);
+
+  // Apply filters client-side
+  const filtered = useMemo(() => {
+    return publications.filter((pub) => {
+      if (filters.operationType && pub.operation_type !== filters.operationType) return false;
+      const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
+      if (filters.origen && origen !== filters.origen) return false;
+      if (filters.destino && destino !== filters.destino) return false;
+      return true;
+    });
+  }, [publications, filters]);
+
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     return d.toLocaleDateString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
   };
 
+  const filterSlot = (
+    <TableroFilters
+      filters={filters}
+      onApply={setFilters}
+      origins={origins}
+      destinations={destinations}
+    />
+  );
+
   return (
-    <AppLayout pendingCount={pendingCount} onRefresh={fetchPublications}>
+    <AppLayout pendingCount={pendingCount} onRefresh={fetchPublications} filterSlot={filterSlot}>
       <div className="px-4 py-6">
         <div className="mx-auto w-full max-w-lg">
-          <div className="mb-4">
-            <p className="text-sm text-muted-foreground">Publicaciones activas</p>
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              Publicaciones activas
+              {filtered.length !== publications.length && ` (${filtered.length}/${publications.length})`}
+            </p>
           </div>
 
-        {loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-32 animate-pulse rounded-xl bg-muted" />
-            ))}
-          </div>
-        ) : publications.length === 0 ? (
-          <div className="py-16 text-center">
-            <Package className="mx-auto h-12 w-12 text-muted-foreground/40" />
-            <p className="mt-4 text-muted-foreground">No hay publicaciones activas</p>
-            <Button className="mt-4" onClick={() => navigate("/seleccionar-operacion")}>
-              Crear publicación
-            </Button>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {publications.map((pub) => {
-              const config = operationConfig[pub.operation_type] || operationConfig.viajar;
-              const Icon = config.icon;
-              const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
-              const frecuencia = getField(pub.data, "frecuencia");
-              const fecha = getField(pub.data, "fecha");
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-32 animate-pulse rounded-xl bg-muted" />
+              ))}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-16 text-center">
+              <Package className="mx-auto h-12 w-12 text-muted-foreground/40" />
+              <p className="mt-4 text-muted-foreground">
+                {publications.length === 0 ? "No hay publicaciones activas" : "No hay publicaciones que coincidan con los filtros"}
+              </p>
+              {publications.length === 0 && (
+                <Button className="mt-4" onClick={() => navigate("/seleccionar-operacion")}>
+                  Crear publicación
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filtered.map((pub) => {
+                const config = operationConfig[pub.operation_type] || operationConfig.viajar;
+                const Icon = config.icon;
+                const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
+                const frecuencia = getField(pub.data, "frecuencia");
+                const fecha = getField(pub.data, "fecha");
 
-              return (
-                <Card key={pub.id} className="overflow-hidden border-border shadow-card hover:shadow-card-hover transition-all cursor-pointer" onClick={() => navigate(`/publicacion/${pub.id}`)}>
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.gradient}`}>
-                        <Icon className="h-5 w-5 text-primary-foreground" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2">
-                          <Badge variant="secondary" className="text-xs">
-                            {config.label}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground">{formatDate(pub.created_at)}</span>
+                return (
+                  <Card key={pub.id} className="overflow-hidden border-border shadow-card hover:shadow-card-hover transition-all cursor-pointer" onClick={() => navigate(`/publicacion/${pub.id}`)}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.gradient}`}>
+                          <Icon className="h-5 w-5 text-primary-foreground" />
                         </div>
-                        {(origen || destino) && (
-                          <div className="mt-2 flex items-center gap-1.5 text-sm text-foreground">
-                            <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-                            <span className="truncate">{origen || "—"}</span>
-                            <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground" />
-                            <span className="truncate">{destino || "—"}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {config.label}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">{formatDate(pub.created_at)}</span>
                           </div>
-                        )}
-                        <div className="mt-2 flex items-center justify-between">
-                          <span className="text-xs text-muted-foreground">por {pub.profile_name} · {pub.id.slice(0, 8).toUpperCase()}</span>
-                          {(frecuencia || fecha) && (
-                            <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                              <Calendar className="h-3 w-3" />
-                              {frecuencia || fecha}
-                            </span>
+                          {(origen || destino) && (
+                            <div className="mt-2 flex items-center gap-1.5 text-sm text-foreground">
+                              <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                              <span className="truncate">{origen || "—"}</span>
+                              <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground" />
+                              <span className="truncate">{destino || "—"}</span>
+                            </div>
                           )}
+                          <div className="mt-2 flex items-center justify-between">
+                            <span className="text-xs text-muted-foreground">por {pub.profile_name} · {pub.id.slice(0, 8).toUpperCase()}</span>
+                            {(frecuencia || fecha) && (
+                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                <Calendar className="h-3 w-3" />
+                                {frecuencia || fecha}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </AppLayout>
