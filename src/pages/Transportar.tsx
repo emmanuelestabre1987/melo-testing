@@ -80,6 +80,7 @@ const Transportar = () => {
   };
 
   return (
+    <AppLayout>
     <WizardLayout
       title="Quiero transportar"
       step={step}
