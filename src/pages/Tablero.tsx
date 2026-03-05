@@ -130,33 +130,14 @@ const Tablero = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background px-4 py-6">
-      <div className="mx-auto w-full max-w-lg">
-        <div className="mb-6 flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Tablero</h1>
+    <div className="flex min-h-screen flex-col bg-background">
+      <AppHeader pendingCount={pendingCount} onRefresh={fetchPublications} />
+
+      <div className="flex-1 px-4 py-6">
+        <div className="mx-auto w-full max-w-lg">
+          <div className="mb-4">
             <p className="text-sm text-muted-foreground">Publicaciones activas</p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" onClick={() => { signOut(); navigate("/"); }}>
-              <LogOut className="h-4 w-4" />
-            </Button>
-            <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/mis-matches")}>
-              <Bell className="h-4 w-4" />
-              {pendingCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
-                  {pendingCount}
-                </span>
-              )}
-            </Button>
-            <Button variant="ghost" size="icon" onClick={fetchPublications}>
-              <RefreshCw className="h-4 w-4" />
-            </Button>
-            <Button size="sm" onClick={() => navigate("/seleccionar-operacion")}>
-              + Publicar
-            </Button>
-          </div>
-        </div>
 
         {loading ? (
           <div className="space-y-4">
