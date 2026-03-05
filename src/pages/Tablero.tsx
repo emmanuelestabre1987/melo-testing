@@ -201,6 +201,7 @@ const Tablero = () => {
             })}
           </div>
         )}
+        </div>
       </div>
     </div>
   );
