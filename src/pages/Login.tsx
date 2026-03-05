@@ -43,9 +43,9 @@ const Login = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
-      {/* Sierras decorativas — puntiagudas como el header */}
-      <svg viewBox="0 0 1200 80" className="absolute bottom-0 left-0 w-full h-[80px]" preserveAspectRatio="none">
+    <div className="relative flex min-h-[100dvh] flex-col items-center justify-center bg-background px-4 overflow-hidden safe-bottom">
+      {/* Sierras decorativas */}
+      <svg viewBox="0 0 1200 80" className="absolute bottom-0 left-0 w-full h-[60px] sm:h-[80px]" preserveAspectRatio="none">
         <path
           d="M0 80 L0 52 L40 30 L70 50 L100 18 L130 42 L170 8 L210 38 L240 15 L275 45 L310 12 L350 40 L380 20 L420 48 L460 10 L500 35 L540 22 L580 50 L610 14 L650 42 L690 6 L730 38 L770 18 L810 45 L850 10 L890 36 L930 20 L970 48 L1010 8 L1050 40 L1090 22 L1130 46 L1170 16 L1200 35 L1200 80 Z"
           fill="hsl(var(--accent))"
@@ -59,25 +59,25 @@ const Login = () => {
       </svg>
 
       <div className="relative z-10 w-full max-w-sm animate-slide-up">
-        <div className="mb-8 flex flex-col items-center gap-3">
-          <MeloLogo className="h-40 w-auto" />
+        <div className="mb-6 sm:mb-8 flex flex-col items-center gap-2">
+          <MeloLogo className="h-28 sm:h-40 w-auto" />
           <p className="text-center text-sm text-muted-foreground">
             Logística para tu comunidad
           </p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-4">
+        <form onSubmit={handleAuth} className="space-y-3 sm:space-y-4">
           {isSignUp && (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="fullName">Nombre completo</Label>
               <Input id="fullName" placeholder="Tu nombre" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
             </div>
           )}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="password">Contraseña</Label>
             <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
@@ -86,7 +86,7 @@ const Login = () => {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-4 sm:mt-6 text-center text-sm text-muted-foreground">
           {isSignUp ? "¿Ya tenés cuenta?" : "¿No tenés cuenta?"}{" "}
           <button className="font-semibold text-primary hover:underline" onClick={() => setIsSignUp(!isSignUp)}>
             {isSignUp ? "Iniciar sesión" : "Registrate"}

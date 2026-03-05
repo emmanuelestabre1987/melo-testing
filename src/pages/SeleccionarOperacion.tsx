@@ -34,29 +34,29 @@ const SeleccionarOperacion = () => {
 
   return (
     <AppLayout>
-      <div className="px-4 py-8">
+      <div className="px-3 sm:px-4 py-5 sm:py-8">
         <div className="mx-auto w-full max-w-md animate-slide-up">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground">¿Qué querés hacer?</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
+          <div className="mb-5 sm:mb-8">
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground">¿Qué querés hacer?</h2>
+            <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
               Seleccioná una operación para comenzar
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {operations.map((op, i) => (
               <button
                 key={op.id}
                 onClick={() => navigate(op.path)}
-                className="group flex w-full items-center gap-4 rounded-xl border border-border bg-card p-5 text-left shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 active:scale-[0.98]"
+                className="group flex w-full items-center gap-3 sm:gap-4 rounded-xl border border-border bg-card p-4 sm:p-5 text-left shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 active:scale-[0.98]"
                 style={{ animationDelay: `${i * 100}ms` }}
               >
-                <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${op.gradient}`}>
-                  <op.icon className="h-6 w-6 text-primary-foreground" />
+                <div className={`flex h-10 w-10 sm:h-12 sm:w-12 shrink-0 items-center justify-center rounded-xl ${op.gradient}`}>
+                  <op.icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-foreground">{op.title}</h3>
-                  <p className="text-sm text-muted-foreground">{op.description}</p>
+                  <h3 className="text-sm sm:text-base font-semibold text-foreground">{op.title}</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{op.description}</p>
                 </div>
               </button>
             ))}

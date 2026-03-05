@@ -72,9 +72,8 @@ const RouteMap = ({ origin, destination, className }: RouteMapProps) => {
 
     if (origin && destination) {
       const bounds = L.latLngBounds([origin.lat, origin.lon], [destination.lat, destination.lon]);
-      mapInstance.current.fitBounds(bounds, { padding: [40, 40] });
+      mapInstance.current.fitBounds(bounds, { padding: [30, 30] });
 
-      // Fetch route from OSRM
       fetch(
         `https://router.project-osrm.org/route/v1/driving/${origin.lon},${origin.lat};${destination.lon},${destination.lat}?overview=full&geometries=geojson`
       )
@@ -102,9 +101,9 @@ const RouteMap = ({ origin, destination, className }: RouteMapProps) => {
 
   return (
     <div className={className}>
-      <div ref={mapRef} className="w-full h-[350px] rounded-lg border border-border overflow-hidden" />
+      <div ref={mapRef} className="w-full h-[200px] sm:h-[300px] rounded-lg border border-border overflow-hidden" />
       {distance && duration && (
-        <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
+        <div className="flex gap-3 mt-2 text-xs sm:text-sm text-muted-foreground">
           <span>📍 {distance}</span>
           <span>🕐 {duration}</span>
         </div>

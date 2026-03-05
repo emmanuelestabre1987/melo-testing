@@ -125,7 +125,6 @@ const Tablero = () => {
     }
   }, [pendingCount]);
 
-  // Derive unique origins/destinations for filter options
   const { origins, destinations } = useMemo(() => {
     const origSet = new Set<string>();
     const destSet = new Set<string>();
@@ -137,7 +136,6 @@ const Tablero = () => {
     return { origins: [...origSet].sort(), destinations: [...destSet].sort() };
   }, [publications]);
 
-  // Apply filters client-side
   const filtered = useMemo(() => {
     return publications.filter((pub) => {
       if (filters.operationType && pub.operation_type !== filters.operationType) return false;
@@ -164,25 +162,25 @@ const Tablero = () => {
 
   return (
     <AppLayout pendingCount={pendingCount} onRefresh={fetchPublications} filterSlot={filterSlot}>
-      <div className="px-4 py-6">
+      <div className="px-3 sm:px-4 py-4 sm:py-6">
         <div className="mx-auto w-full max-w-lg">
-          <div className="mb-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+          <div className="mb-3 sm:mb-4 flex items-center justify-between">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Publicaciones activas
               {filtered.length !== publications.length && ` (${filtered.length}/${publications.length})`}
             </p>
           </div>
 
           {loading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="h-32 animate-pulse rounded-xl bg-muted" />
+                <div key={i} className="h-24 sm:h-32 animate-pulse rounded-xl bg-muted" />
               ))}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="py-16 text-center">
-              <Package className="mx-auto h-12 w-12 text-muted-foreground/40" />
-              <p className="mt-4 text-muted-foreground">
+            <div className="py-12 sm:py-16 text-center">
+              <Package className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground/40" />
+              <p className="mt-3 sm:mt-4 text-sm text-muted-foreground">
                 {publications.length === 0 ? "No hay publicaciones activas" : "No hay publicaciones que coincidan con los filtros"}
               </p>
               {publications.length === 0 && (
@@ -192,7 +190,7 @@ const Tablero = () => {
               )}
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2.5 sm:space-y-3">
               {filtered.map((pub) => {
                 const config = operationConfig[pub.operation_type] || operationConfig.viajar;
                 const Icon = config.icon;
@@ -201,32 +199,32 @@ const Tablero = () => {
                 const fecha = getField(pub.data, "fecha");
 
                 return (
-                  <Card key={pub.id} className="overflow-hidden border-border shadow-card hover:shadow-card-hover transition-all cursor-pointer" onClick={() => navigate(`/publicacion/${pub.id}`)}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${config.gradient}`}>
-                          <Icon className="h-5 w-5 text-primary-foreground" />
+                  <Card key={pub.id} className="overflow-hidden border-border shadow-card hover:shadow-card-hover transition-all cursor-pointer active:scale-[0.98]" onClick={() => navigate(`/publicacion/${pub.id}`)}>
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex items-start gap-2.5 sm:gap-3">
+                        <div className={`flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg ${config.gradient}`}>
+                          <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <Badge variant="secondary" className="text-xs">
+                            <Badge variant="secondary" className="text-[10px] sm:text-xs">
                               {config.label}
                             </Badge>
-                            <span className="text-xs text-muted-foreground">{formatDate(pub.created_at)}</span>
+                            <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0">{formatDate(pub.created_at)}</span>
                           </div>
                           {(origen || destino) && (
-                            <div className="mt-2 flex items-center gap-1.5 text-sm text-foreground">
-                              <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                            <div className="mt-1.5 sm:mt-2 flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm text-foreground">
+                              <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5 shrink-0 text-muted-foreground" />
                               <span className="truncate">{origen || "—"}</span>
-                              <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground" />
+                              <ArrowRight className="h-2.5 w-2.5 sm:h-3 sm:w-3 shrink-0 text-muted-foreground" />
                               <span className="truncate">{destino || "—"}</span>
                             </div>
                           )}
-                          <div className="mt-2 flex items-center justify-between">
-                            <span className="text-xs text-muted-foreground">por {pub.profile_name} · {pub.id.slice(0, 8).toUpperCase()}</span>
+                          <div className="mt-1.5 sm:mt-2 flex items-center justify-between">
+                            <span className="text-[10px] sm:text-xs text-muted-foreground truncate">por {pub.profile_name} · {pub.id.slice(0, 8).toUpperCase()}</span>
                             {(frecuencia || fecha) && (
-                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <Calendar className="h-3 w-3" />
+                              <span className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-muted-foreground shrink-0">
+                                <Calendar className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                 {frecuencia || fecha}
                               </span>
                             )}
