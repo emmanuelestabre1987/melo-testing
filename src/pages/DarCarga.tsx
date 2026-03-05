@@ -83,6 +83,7 @@ const DarCarga = () => {
   const rutaStep = tipoEnvio === "encomienda" ? 4 : 5;
 
   return (
+    <AppLayout>
     <WizardLayout
       title="Quiero dar carga"
       step={step}
