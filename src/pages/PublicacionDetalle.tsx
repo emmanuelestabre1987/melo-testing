@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import AppLayout from "@/components/AppLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -116,18 +117,22 @@ const PublicacionDetalle = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
+      <AppLayout>
+        <div className="flex items-center justify-center py-20 bg-background">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        </div>
+      </AppLayout>
     );
   }
 
   if (!pub) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <p className="text-muted-foreground">Publicación no encontrada</p>
-        <Button className="mt-4" onClick={() => navigate("/tablero")}>Volver al tablero</Button>
-      </div>
+      <AppLayout>
+        <div className="flex flex-col items-center justify-center py-20 bg-background px-4">
+          <p className="text-muted-foreground">Publicación no encontrada</p>
+          <Button className="mt-4" onClick={() => navigate("/tablero")}>Volver al tablero</Button>
+        </div>
+      </AppLayout>
     );
   }
 
@@ -153,7 +158,8 @@ const PublicacionDetalle = () => {
   const shortId = pub.id.slice(0, 8).toUpperCase();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <AppLayout>
+    <div className="flex flex-col bg-background">
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-sm px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
@@ -281,6 +287,7 @@ const PublicacionDetalle = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </AppLayout>
   );
 };
 

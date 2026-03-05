@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppLayout from "@/components/AppLayout";
 import { useNavigate } from "react-router-dom";
 import WizardLayout from "@/components/WizardLayout";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,7 @@ const Viajar = () => {
   };
 
   return (
+    <AppLayout>
     <WizardLayout
       title="Quiero viajar"
       step={step}
@@ -108,6 +110,7 @@ const Viajar = () => {
         <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
+    </AppLayout>
   );
 };
 

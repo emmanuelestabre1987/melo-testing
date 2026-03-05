@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppLayout from "@/components/AppLayout";
 import { useNavigate } from "react-router-dom";
 import WizardLayout from "@/components/WizardLayout";
 import OptionCard from "@/components/OptionCard";
@@ -82,6 +83,7 @@ const DarCarga = () => {
   const rutaStep = tipoEnvio === "encomienda" ? 4 : 5;
 
   return (
+    <AppLayout>
     <WizardLayout
       title="Quiero dar carga"
       step={step}
@@ -151,6 +153,7 @@ const DarCarga = () => {
         <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
+    </AppLayout>
   );
 };
 

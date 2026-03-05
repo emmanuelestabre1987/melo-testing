@@ -1,4 +1,5 @@
 import { useState } from "react";
+import AppLayout from "@/components/AppLayout";
 import { useNavigate } from "react-router-dom";
 import WizardLayout from "@/components/WizardLayout";
 import OptionCard from "@/components/OptionCard";
@@ -79,6 +80,7 @@ const Transportar = () => {
   };
 
   return (
+    <AppLayout>
     <WizardLayout
       title="Quiero transportar"
       step={step}
@@ -140,6 +142,7 @@ const Transportar = () => {
         </div>
       )}
     </WizardLayout>
+    </AppLayout>
   );
 };
 

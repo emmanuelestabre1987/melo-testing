@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import AppLayout from "@/components/AppLayout";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -190,7 +191,8 @@ const MisMatches = () => {
   const outgoing = matches.filter((m) => !m.isIncoming);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <AppLayout>
+    <div className="flex flex-col bg-background">
       <div className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-sm px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
           <button onClick={() => navigate("/tablero")} className="rounded-lg p-1.5 hover:bg-muted transition-colors">
@@ -306,6 +308,7 @@ const MisMatches = () => {
         </div>
       </div>
     </div>
+    </AppLayout>
   );
 };
 
