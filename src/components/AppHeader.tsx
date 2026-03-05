@@ -19,53 +19,42 @@ interface AppHeaderProps {
   filterSlot?: React.ReactNode;
 }
 
-/** Decorative SVG: sierras silhouette + circuit-node dots blending community & digital */
+/** Sharp pointed sierras + circuit traces — community meets digital */
 const HeaderDecoration = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    {/* Mountain silhouette — back layer */}
+    {/* Sierras puntiagudas — capa trasera */}
     <svg
-      viewBox="0 0 800 80"
-      className="absolute bottom-0 left-0 w-full h-[50px]"
+      viewBox="0 0 1200 80"
+      className="absolute bottom-0 left-0 w-full h-[60px]"
       preserveAspectRatio="none"
     >
+      {/* Back mountain range — darker, taller */}
       <path
-        d="M0 80 L0 52 Q40 38 80 46 Q120 22 160 34 Q200 14 240 28 Q280 8 320 22 Q360 12 400 26 Q440 6 480 20 Q520 14 560 28 Q600 8 640 22 Q680 16 720 30 Q760 20 800 32 L800 80 Z"
+        d="M0 80 L0 55 L40 30 L70 50 L100 18 L130 42 L170 8 L210 38 L240 15 L275 45 L310 12 L350 40 L380 20 L420 48 L460 10 L500 35 L540 22 L580 50 L610 14 L650 42 L690 6 L730 38 L770 18 L810 45 L850 10 L890 36 L930 20 L970 48 L1010 8 L1050 40 L1090 22 L1130 46 L1170 16 L1200 35 L1200 80 Z"
         fill="hsl(var(--accent))"
-        opacity="0.06"
+        opacity="0.08"
       />
+      {/* Front mountain range — lighter, shorter */}
       <path
-        d="M0 80 L0 60 Q50 48 90 54 Q130 36 170 44 Q210 28 250 38 Q290 20 330 32 Q370 24 410 36 Q450 18 490 30 Q530 26 570 36 Q610 22 650 34 Q690 28 730 38 Q770 30 800 40 L800 80 Z"
+        d="M0 80 L0 62 L50 42 L80 58 L120 32 L155 52 L190 28 L230 50 L265 35 L300 55 L340 26 L380 48 L420 30 L460 54 L500 22 L540 46 L580 32 L620 56 L660 28 L700 50 L740 34 L780 55 L820 25 L860 48 L900 36 L940 56 L980 30 L1020 52 L1060 38 L1100 55 L1140 32 L1180 50 L1200 42 L1200 80 Z"
         fill="hsl(var(--accent))"
-        opacity="0.04"
+        opacity="0.05"
       />
     </svg>
 
-    {/* Circuit/connectivity dots — digital layer */}
+    {/* Circuit connectivity trace — digital layer */}
     <svg
-      viewBox="0 0 800 80"
+      viewBox="0 0 1200 80"
       className="absolute inset-0 w-full h-full"
     >
-      {/* Horizontal trace line */}
-      <line x1="60" y1="65" x2="740" y2="65" stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.06" />
-      
-      {/* Node dots along the trace */}
-      {[100, 200, 340, 460, 580, 700].map((x, i) => (
+      <line x1="80" y1="68" x2="1120" y2="68" stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.05" />
+      {[150, 300, 480, 650, 820, 1000].map((x, i) => (
         <g key={i}>
-          <circle cx={x} cy={65} r="1.5" fill="hsl(var(--primary))" opacity="0.1" />
-          <line
-            x1={x} y1={65} x2={x} y2={65 - (8 + (i % 3) * 4)}
-            stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.06"
-          />
-          <circle cx={x} cy={65 - (8 + (i % 3) * 4)} r="1" fill="hsl(var(--primary))" opacity="0.08" />
+          <circle cx={x} cy={68} r="1.5" fill="hsl(var(--primary))" opacity="0.08" />
+          <line x1={x} y1={68} x2={x} y2={68 - (6 + (i % 3) * 3)} stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.05" />
+          <circle cx={x} cy={68 - (6 + (i % 3) * 3)} r="1" fill="hsl(var(--primary))" opacity="0.06" />
         </g>
       ))}
-
-      {/* WiFi arcs — top right corner, very subtle */}
-      <g transform="translate(760, 14)" opacity="0.06">
-        <path d="M-6 0 A6 6 0 0 1 6 0" fill="none" stroke="hsl(var(--primary))" strokeWidth="1" />
-        <path d="M-10 -2 A10 10 0 0 1 10 -2" fill="none" stroke="hsl(var(--primary))" strokeWidth="0.8" />
-        <circle cx="0" cy="3" r="1.2" fill="hsl(var(--primary))" />
-      </g>
     </svg>
   </div>
 );
@@ -87,10 +76,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
   };
 
   return (
-    <header
-      className="relative overflow-hidden border-b border-border/40 h-16"
-      style={{ backgroundColor: "hsl(var(--header-background))" }}
-    >
+    <header className="relative overflow-hidden border-b border-border/40 h-16 bg-background">
       <HeaderDecoration />
 
       <div className="relative z-10 flex items-center justify-between px-3 h-full">
