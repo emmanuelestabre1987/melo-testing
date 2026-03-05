@@ -52,7 +52,6 @@ const HeaderDecoration = () => (
       {[100, 200, 340, 460, 580, 700].map((x, i) => (
         <g key={i}>
           <circle cx={x} cy={65} r="1.5" fill="hsl(var(--primary))" opacity="0.1" />
-          {/* Vertical micro-traces going up */}
           <line
             x1={x} y1={65} x2={x} y2={65 - (8 + (i % 3) * 4)}
             stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.06"
@@ -88,10 +87,13 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
   };
 
   return (
-    <header className="relative overflow-hidden border-b border-border/60 bg-card/70 backdrop-blur-sm">
+    <header
+      className="relative overflow-hidden border-b border-border/40 h-16"
+      style={{ backgroundColor: "hsl(var(--header-background))" }}
+    >
       <HeaderDecoration />
 
-      <div className="relative z-10 flex items-center justify-between px-3 h-16">
+      <div className="relative z-10 flex items-center justify-between px-3 h-full">
         {/* Left: sidebar trigger + brand */}
         <div className="flex items-center gap-2">
           <SidebarTrigger className="h-8 w-8" />
