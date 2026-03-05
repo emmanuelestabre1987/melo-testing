@@ -102,7 +102,7 @@ const RouteMap = ({ origin, destination, className }: RouteMapProps) => {
 
   return (
     <div className={className}>
-      <div ref={mapRef} className="w-full h-[250px] rounded-lg border border-border overflow-hidden" />
+      <div ref={mapRef} className="w-full h-[350px] rounded-lg border border-border overflow-hidden" />
       {distance && duration && (
         <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
           <span>📍 {distance}</span>
