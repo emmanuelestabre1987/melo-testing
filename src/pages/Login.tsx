@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import logoMelo from "@/assets/logo-melo.png";
+import MeloLogo from "@/components/MeloLogo";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ const Login = () => {
 
       <div className="relative z-10 w-full max-w-sm animate-slide-up">
         <div className="mb-8 flex flex-col items-center gap-3">
-          <img src={logoMelo} alt="MELO Logo" className="h-28 object-contain mix-blend-multiply" />
+          <MeloLogo className="h-28 w-auto" />
           <p className="text-center text-sm text-muted-foreground">
             Logística compartida para las sierras
           </p>
