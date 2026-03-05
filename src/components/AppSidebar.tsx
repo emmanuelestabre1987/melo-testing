@@ -14,7 +14,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
+import logoMelo from "@/assets/logo-melo.png";
 
 const mainItems = [
   { title: "Tablero", url: "/tablero", icon: LayoutDashboard },
@@ -40,8 +40,17 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border">
       <SidebarContent className="pt-2">
+        {/* Logo section */}
+        {!collapsed && (
+          <div className="flex items-center justify-center py-4 px-3">
+            <img src={logoMelo} alt="MELO" className="h-20 w-20 rounded-full object-cover shadow-md" />
+          </div>
+        )}
+
         <SidebarGroup>
-          <SidebarGroupLabel>Principal</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-wider font-semibold">
+            Principal
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
@@ -54,8 +63,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-muted/50"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      className="hover:bg-accent/10 hover:text-accent transition-colors"
+                      activeClassName="bg-accent/15 text-accent font-semibold border-l-[3px] border-accent"
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
@@ -68,7 +77,9 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Operaciones</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-muted-foreground text-[10px] uppercase tracking-wider font-semibold">
+            Operaciones
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {operationItems.map((item) => (
@@ -81,8 +92,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-muted/50"
-                      activeClassName="bg-primary/10 text-primary font-medium"
+                      className="hover:bg-accent/10 hover:text-accent transition-colors"
+                      activeClassName="bg-accent/15 text-accent font-semibold border-l-[3px] border-accent"
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
@@ -100,6 +111,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip="Cerrar sesión"
+              className="hover:bg-destructive/10 hover:text-destructive transition-colors"
               onClick={() => {
                 signOut();
                 navigate("/");
