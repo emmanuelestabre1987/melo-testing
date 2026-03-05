@@ -85,8 +85,30 @@ const Tablero = () => {
     setLoading(false);
   };
 
+  const fetchPendingCount = async () => {
+    if (!user) return;
+    // Get matches on my publications that are pending
+    const { data: matchData } = await supabase
+      .from("matches")
+      .select("id, publication_id, user_id, status")
+      .eq("status", "pending");
+    if (matchData) {
+      const pubIds = [...new Set(matchData.map((m) => m.publication_id))];
+      if (pubIds.length > 0) {
+        const { data: pubs } = await supabase
+          .from("publications")
+          .select("id, user_id")
+          .in("id", pubIds);
+        const myPubIds = new Set(pubs?.filter((p) => p.user_id === user.id).map((p) => p.id) ?? []);
+        const count = matchData.filter((m) => myPubIds.has(m.publication_id) && m.user_id !== user.id).length;
+        setPendingCount(count);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchPublications();
+    fetchPendingCount();
   }, []);
 
   const formatDate = (iso: string) => {
