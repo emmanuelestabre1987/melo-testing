@@ -25,7 +25,7 @@ const Viajar = () => {
   const [destinoCoords, setDestinoCoords] = useState<Coords>();
   const [saving, setSaving] = useState(false);
 
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   const handleBack = () => {
     if (step === 1) navigate("/seleccionar-operacion");
@@ -64,9 +64,8 @@ const Viajar = () => {
     if (saving) return true;
     switch (step) {
       case 1: return !cantidadPersonas;
-      case 2: return !isFrecuenciaValid(frecuencia);
-      case 3: return !origen;
-      case 4: return !destino;
+      case 2: return !origen || !destino;
+      case 3: return !isFrecuenciaValid(frecuencia);
       default: return false;
     }
   };
@@ -88,31 +87,25 @@ const Viajar = () => {
         </div>
       )}
       {step === 2 && (
-        <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
-      )}
-      {step === 3 && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Origen</h3>
+          <h3 className="text-lg font-semibold text-foreground">Cargá tu ruta</h3>
           <LocationAutocomplete
             value={origen}
             onChange={(val, coords) => { setOrigen(val); if (coords) setOrigenCoords(coords); }}
             placeholder="Ej: San Marcos Sierras"
-            label="¿Desde dónde salís?"
+            label="Origen"
           />
-          {origenCoords && <RouteMap origin={origenCoords} destination={destinoCoords} />}
-        </div>
-      )}
-      {step === 4 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Destino</h3>
           <LocationAutocomplete
             value={destino}
             onChange={(val, coords) => { setDestino(val); if (coords) setDestinoCoords(coords); }}
             placeholder="Ej: Córdoba Capital"
-            label="¿A dónde vas?"
+            label="Destino"
           />
           <RouteMap origin={origenCoords} destination={destinoCoords} />
         </div>
+      )}
+      {step === 3 && (
+        <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
   );
