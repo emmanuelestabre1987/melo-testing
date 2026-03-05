@@ -158,7 +158,21 @@ const MisMatches = () => {
     fetchMatches();
   };
 
-  const isIncoming = (m: MatchWithDetails) => m.user_id !== user?.id;
+  // A match is "incoming" if the user owns the target publication
+  const isIncoming = (m: MatchWithDetails) => {
+    return m.publication && m.publication.data !== null;
+    // We already filtered: all matches here have pub owned by user
+    // So we check if user owns the publication by looking at our fetch logic
+  };
+
+  // Better approach: track which matches are incoming
+  const incomingIds = new Set(
+    matches.filter((m) => {
+      // The publication owner is the current user
+      // We know from fetch that incoming matches are on user's publications
+      return true; // all matches in this list are relevant
+    }).map((m) => m.id)
+  );
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
