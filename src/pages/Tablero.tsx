@@ -119,12 +119,7 @@ const Tablero = () => {
       toastShownRef.current = true;
       toast({
         title: `Tenés ${pendingCount} solicitud${pendingCount > 1 ? "es" : ""} de match pendiente${pendingCount > 1 ? "s" : ""}`,
-        description: "Revisalas en Mis Matches para aceptar o rechazar.",
-        action: (
-          <Button size="sm" variant="outline" onClick={() => navigate("/mis-matches")}>
-            Ver
-          </Button>
-        ),
+        description: "Tocá la campana 🔔 para revisarlas.",
       });
     }
   }, [pendingCount]);
