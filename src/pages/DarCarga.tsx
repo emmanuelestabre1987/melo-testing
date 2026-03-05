@@ -129,26 +129,20 @@ const DarCarga = () => {
           </div>
         </div>
       )}
-      {step === origenStep && (
+      {step === rutaStep && (
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Origen de retiro</h3>
+          <h3 className="text-lg font-semibold text-foreground">Cargá tu ruta</h3>
           <LocationAutocomplete
             value={origen}
             onChange={(val, coords) => { setOrigen(val); if (coords) setOrigenCoords(coords); }}
             placeholder="Ej: San Marcos Sierras"
-            label="Dirección o referencia"
+            label="Origen"
           />
-          {origenCoords && <RouteMap origin={origenCoords} destination={destinoCoords} />}
-        </div>
-      )}
-      {step === destinoStep && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-foreground">Destino de la carga</h3>
           <LocationAutocomplete
             value={destino}
             onChange={(val, coords) => { setDestino(val); if (coords) setDestinoCoords(coords); }}
             placeholder="Ej: Córdoba Capital"
-            label="Dirección o referencia"
+            label="Destino"
           />
           <RouteMap origin={origenCoords} destination={destinoCoords} />
         </div>
