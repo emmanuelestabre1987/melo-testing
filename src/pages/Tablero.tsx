@@ -47,9 +47,11 @@ const getOriginDestination = (data: Json, opType: string) => {
 const Tablero = () => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
+  const { toast } = useToast();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
+  const toastShownRef = useRef(false);
 
   const fetchPublications = async () => {
     setLoading(true);
