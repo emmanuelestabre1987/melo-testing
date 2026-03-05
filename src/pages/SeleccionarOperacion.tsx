@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Truck, Package, Users } from "lucide-react";
-import AppHeader from "@/components/AppHeader";
+import AppLayout from "@/components/AppLayout";
 
 const operations = [
   {
@@ -33,10 +33,8 @@ const SeleccionarOperacion = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader />
-
-      <div className="flex-1 px-4 py-8">
+    <AppLayout>
+      <div className="px-4 py-8">
         <div className="mx-auto w-full max-w-md animate-slide-up">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-foreground">¿Qué querés hacer?</h2>
@@ -65,7 +63,7 @@ const SeleccionarOperacion = () => {
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

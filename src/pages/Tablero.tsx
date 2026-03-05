@@ -8,7 +8,7 @@ import { Truck, Package, Users, MapPin, ArrowRight, Calendar } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
-import AppHeader from "@/components/AppHeader";
+import AppLayout from "@/components/AppLayout";
 
 interface Publication {
   id: string;
@@ -130,10 +130,8 @@ const Tablero = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader pendingCount={pendingCount} onRefresh={fetchPublications} />
-
-      <div className="flex-1 px-4 py-6">
+    <AppLayout pendingCount={pendingCount} onRefresh={fetchPublications}>
+      <div className="px-4 py-6">
         <div className="mx-auto w-full max-w-lg">
           <div className="mb-4">
             <p className="text-sm text-muted-foreground">Publicaciones activas</p>
@@ -203,7 +201,7 @@ const Tablero = () => {
         )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 
