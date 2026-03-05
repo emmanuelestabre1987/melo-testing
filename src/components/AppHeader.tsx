@@ -3,6 +3,7 @@ import { Bell, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import logoMelo from "@/assets/logo-melo.png";
 
 interface AppHeaderProps {
   pendingCount?: number;
@@ -18,12 +19,12 @@ const SierrasSVG = () => (
   >
     <path
       d="M0 60 L0 38 Q20 32 35 36 Q55 18 75 28 Q95 14 110 22 Q130 8 150 18 Q170 6 190 16 Q210 4 230 14 Q250 8 270 20 Q290 10 310 22 Q330 6 350 18 Q370 12 390 24 L400 20 L400 60 Z"
-      fill="hsl(var(--primary))"
+      fill="hsl(var(--accent))"
       className="animate-[sierras-sway_8s_ease-in-out_infinite]"
     />
     <path
       d="M0 60 L0 44 Q30 36 50 40 Q70 28 90 34 Q120 22 140 30 Q160 20 180 28 Q200 16 220 26 Q240 22 260 30 Q280 18 300 28 Q320 24 340 32 Q360 22 380 30 L400 28 L400 60 Z"
-      fill="hsl(var(--primary))"
+      fill="hsl(var(--accent))"
       className="animate-[sierras-sway_6s_ease-in-out_infinite_reverse]"
     />
   </svg>
@@ -45,9 +46,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
         <div className="flex items-center gap-2">
           <SidebarTrigger className="h-8 w-8" />
           <button onClick={() => navigate("/tablero")} className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-primary shadow-sm">
-              <span className="text-xs font-extrabold text-primary-foreground tracking-tight">M</span>
-            </div>
+            <img src={logoMelo} alt="MELO Logo" className="h-9 w-9 rounded-full object-cover" />
             <div className="hidden sm:block">
               <h1 className="text-base font-extrabold tracking-tight text-foreground leading-none">
                 MELO
@@ -87,7 +86,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
             )}
           </Button>
           {user && (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground text-xs font-bold">
               {(user.email?.[0] || "U").toUpperCase()}
             </div>
           )}

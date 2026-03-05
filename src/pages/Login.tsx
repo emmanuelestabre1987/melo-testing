@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Truck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import logoMelo from "@/assets/logo-melo.png";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -46,15 +46,13 @@ const Login = () => {
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
       {/* Sierras decorativas */}
       <svg viewBox="0 0 400 80" className="absolute bottom-0 left-0 w-full h-[100px] opacity-[0.08]" preserveAspectRatio="none">
-        <path d="M0 80 L0 50 Q30 30 60 42 Q90 20 120 32 Q150 10 180 24 Q210 8 240 20 Q270 12 300 28 Q330 10 360 22 Q380 16 400 26 L400 80 Z" fill="hsl(var(--primary))" />
-        <path d="M0 80 L0 58 Q40 44 70 52 Q100 36 130 44 Q160 28 190 38 Q220 22 250 34 Q280 28 310 40 Q340 24 370 36 L400 32 L400 80 Z" fill="hsl(var(--primary))" />
+        <path d="M0 80 L0 50 Q30 30 60 42 Q90 20 120 32 Q150 10 180 24 Q210 8 240 20 Q270 12 300 28 Q330 10 360 22 Q380 16 400 26 L400 80 Z" fill="hsl(var(--accent))" />
+        <path d="M0 80 L0 58 Q40 44 70 52 Q100 36 130 44 Q160 28 190 38 Q220 22 250 34 Q280 28 310 40 Q340 24 370 36 L400 32 L400 80 Z" fill="hsl(var(--accent))" />
       </svg>
 
       <div className="relative z-10 w-full max-w-sm animate-slide-up">
         <div className="mb-8 flex flex-col items-center gap-3">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl gradient-primary shadow-md">
-            <Truck className="h-8 w-8 text-primary-foreground" />
-          </div>
+          <img src={logoMelo} alt="MELO Logo" className="h-24 w-24 rounded-full object-cover shadow-md" />
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground">MELO</h1>
           <p className="text-center text-sm text-muted-foreground">
             Logística compartida para las sierras
