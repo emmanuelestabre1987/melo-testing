@@ -11,11 +11,14 @@ interface AppLayoutProps {
 const AppLayout = ({ children, pendingCount, onRefresh }: AppLayoutProps) => {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col min-w-0">
-          <AppHeader pendingCount={pendingCount} onRefresh={onRefresh} />
-          <main className="flex-1">{children}</main>
+      <div className="min-h-screen flex flex-col w-full">
+        {/* Header spans full width, always on top */}
+        <AppHeader pendingCount={pendingCount} onRefresh={onRefresh} />
+        
+        {/* Sidebar + content below the header */}
+        <div className="flex flex-1 w-full">
+          <AppSidebar />
+          <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>
     </SidebarProvider>
