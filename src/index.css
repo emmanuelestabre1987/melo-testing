@@ -114,3 +114,8 @@
     box-shadow: 0 8px 24px -4px hsl(160 30% 12% / 0.12);
   }
 }
+
+@keyframes sierras-sway {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-8px); }
+}
