@@ -41,6 +41,7 @@ interface MatchWithDetails {
   created_at: string;
   user_id: string;
   requester_name: string;
+  isIncoming: boolean;
   publication: {
     id: string;
     operation_type: string;
@@ -71,7 +72,6 @@ const MisMatches = () => {
     if (!user) return;
     setLoading(true);
 
-    // Get matches where the user owns the publication (incoming requests)
     const { data: matchData, error } = await supabase
       .from("matches")
       .select("id, status, created_at, user_id, publication_id, matched_publication_id")
@@ -82,8 +82,6 @@ const MisMatches = () => {
       return;
     }
 
-    // Filter to only incoming matches (where user owns the publication, not the requester)
-    // We need to fetch publications to know which ones belong to the user
     const pubIds = [...new Set(matchData.map((m) => m.publication_id))];
     const matchedPubIds = matchData.map((m) => m.matched_publication_id).filter(Boolean) as string[];
     const allPubIds = [...new Set([...pubIds, ...matchedPubIds])];
@@ -95,29 +93,31 @@ const MisMatches = () => {
 
     const pubMap = new Map(pubs?.map((p) => [p.id, p]) ?? []);
 
-    // Filter: only matches on MY publications where I'm NOT the requester
-    const incomingMatches = matchData.filter((m) => {
-      const pub = pubMap.get(m.publication_id);
-      return pub && pub.user_id === user.id && m.user_id !== user.id;
-    });
+    // Determine which matches are incoming (user owns the target publication)
+    const incomingIds = new Set(
+      matchData
+        .filter((m) => {
+          const pub = pubMap.get(m.publication_id);
+          return pub && pub.user_id === user.id;
+        })
+        .map((m) => m.id)
+    );
 
-    // Also include matches I sent (outgoing) so user can see status
-    const outgoingMatches = matchData.filter((m) => m.user_id === user.id);
+    // Outgoing: matches user sent
+    const outgoingIds = new Set(matchData.filter((m) => m.user_id === user.id).map((m) => m.id));
 
-    const allRelevant = [...incomingMatches, ...outgoingMatches];
-    // Deduplicate by id
-    const uniqueMap = new Map(allRelevant.map((m) => [m.id, m]));
-    const uniqueMatches = [...uniqueMap.values()];
+    // All relevant = incoming OR outgoing
+    const relevantMatches = matchData.filter((m) => incomingIds.has(m.id) || outgoingIds.has(m.id));
 
     // Fetch requester names
-    const requesterIds = [...new Set(uniqueMatches.map((m) => m.user_id))];
+    const requesterIds = [...new Set(relevantMatches.map((m) => m.user_id))];
     const { data: profiles } = await supabase
       .from("profiles")
       .select("user_id, full_name")
       .in("user_id", requesterIds);
     const nameMap = new Map(profiles?.map((p) => [p.user_id, p.full_name]) ?? []);
 
-    const result: MatchWithDetails[] = uniqueMatches.map((m) => {
+    const result: MatchWithDetails[] = relevantMatches.map((m) => {
       const pub = pubMap.get(m.publication_id);
       const matchedPub = m.matched_publication_id ? pubMap.get(m.matched_publication_id) : null;
       return {
@@ -126,6 +126,7 @@ const MisMatches = () => {
         created_at: m.created_at,
         user_id: m.user_id,
         requester_name: nameMap.get(m.user_id) || "Usuario",
+        isIncoming: incomingIds.has(m.id),
         publication: pub
           ? { id: pub.id, operation_type: pub.operation_type, data: pub.data }
           : { id: m.publication_id, operation_type: "viajar", data: {} as Json },
@@ -158,8 +159,6 @@ const MisMatches = () => {
     fetchMatches();
   };
 
-  const isIncoming = (m: MatchWithDetails) => m.user_id !== user?.id;
-
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
@@ -186,6 +185,9 @@ const MisMatches = () => {
       </div>
     );
   };
+
+  const incoming = matches.filter((m) => m.isIncoming);
+  const outgoing = matches.filter((m) => !m.isIncoming);
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -215,11 +217,10 @@ const MisMatches = () => {
             </div>
           ) : (
             <>
-              {/* Incoming matches */}
-              {matches.filter(isIncoming).length > 0 && (
+              {incoming.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-foreground">Solicitudes recibidas</h3>
-                  {matches.filter(isIncoming).map((m) => {
+                  {incoming.map((m) => {
                     const st = statusLabels[m.status] || statusLabels.pending;
                     return (
                       <Card key={m.id} className="border-border shadow-card">
@@ -274,11 +275,10 @@ const MisMatches = () => {
                 </div>
               )}
 
-              {/* Outgoing matches */}
-              {matches.filter((m) => !isIncoming(m)).length > 0 && (
+              {outgoing.length > 0 && (
                 <div className="space-y-3">
                   <h3 className="text-sm font-semibold text-foreground">Matches enviados</h3>
-                  {matches.filter((m) => !isIncoming(m)).map((m) => {
+                  {outgoing.map((m) => {
                     const st = statusLabels[m.status] || statusLabels.pending;
                     return (
                       <Card key={m.id} className="border-border shadow-card">

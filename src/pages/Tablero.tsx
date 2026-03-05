@@ -90,7 +90,6 @@ const Tablero = () => {
 
   const fetchPendingCount = async () => {
     if (!user) return;
-    // Get matches on my publications that are pending
     const { data: matchData } = await supabase
       .from("matches")
       .select("id, publication_id, user_id, status")
@@ -103,7 +102,7 @@ const Tablero = () => {
           .select("id, user_id")
           .in("id", pubIds);
         const myPubIds = new Set(pubs?.filter((p) => p.user_id === user.id).map((p) => p.id) ?? []);
-        const count = matchData.filter((m) => myPubIds.has(m.publication_id) && m.user_id !== user.id).length;
+        const count = matchData.filter((m) => myPubIds.has(m.publication_id)).length;
         setPendingCount(count);
       }
     }
