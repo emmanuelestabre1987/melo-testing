@@ -12,11 +12,11 @@ interface AppLayoutProps {
 const AppLayout = ({ children, pendingCount, onRefresh, filterSlot }: AppLayoutProps) => {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex flex-col w-full">
+      <div className="h-[100dvh] flex flex-col w-full overflow-hidden">
         <AppHeader pendingCount={pendingCount} onRefresh={onRefresh} filterSlot={filterSlot} />
-        <div className="flex flex-1 w-full">
+        <div className="flex flex-1 w-full min-h-0">
           <AppSidebar />
-          <main className="flex-1 min-w-0">{children}</main>
+          <main className="flex-1 min-w-0 overflow-y-auto">{children}</main>
         </div>
       </div>
     </SidebarProvider>

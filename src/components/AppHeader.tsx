@@ -24,7 +24,7 @@ const HeaderDecoration = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
     <svg
       viewBox="0 0 1200 80"
-      className="absolute bottom-0 left-0 w-full h-[50px]"
+      className="absolute bottom-0 left-0 w-full h-[40px] sm:h-[50px]"
       preserveAspectRatio="none"
     >
       <path
@@ -38,7 +38,7 @@ const HeaderDecoration = () => (
         opacity="0.05"
       />
     </svg>
-    <svg viewBox="0 0 1200 80" className="absolute inset-0 w-full h-full">
+    <svg viewBox="0 0 1200 80" className="absolute inset-0 w-full h-full hidden sm:block">
       <line x1="80" y1="68" x2="1120" y2="68" stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.05" />
       {[150, 300, 480, 650, 820, 1000].map((x, i) => (
         <g key={i}>
@@ -68,25 +68,25 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
   };
 
   return (
-    <header className="relative overflow-hidden border-b border-border/40 h-20 bg-background z-50">
+    <header className="relative overflow-hidden border-b border-border/40 h-14 sm:h-16 bg-background z-50">
       <HeaderDecoration />
 
-      <div className="relative z-10 flex items-center justify-between px-3 h-full">
-        <div className="flex items-center gap-2">
+      <div className="relative z-10 flex items-center justify-between px-2 sm:px-3 h-full">
+        <div className="flex items-center gap-1.5 sm:gap-2">
           <SidebarTrigger className="h-8 w-8" />
-          <button onClick={() => navigate("/tablero")} className="flex items-center gap-2">
-            <MeloLogo className="h-16 w-auto" />
+          <button onClick={() => navigate("/tablero")} className="flex items-center">
+            <MeloLogo className="h-10 sm:h-12 w-auto" />
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {isTablero && (
             <Button
               size="sm"
-              className="h-8 text-xs"
+              className="h-7 sm:h-8 text-[11px] sm:text-xs px-2 sm:px-3"
               onClick={() => navigate("/seleccionar-operacion")}
             >
-              <Plus className="h-3.5 w-3.5 mr-1" />
+              <Plus className="h-3.5 w-3.5 mr-0.5 sm:mr-1" />
               <span className="hidden sm:inline">Crear Publicación</span>
               <span className="sm:hidden">Crear</span>
             </Button>
@@ -109,7 +109,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground text-sm font-bold shadow-sm transition-colors hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring">
+                <button className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-accent-foreground text-xs font-bold shadow-sm transition-colors hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring">
                   {userInitial}
                 </button>
               </DropdownMenuTrigger>

@@ -38,12 +38,12 @@ export function AppSidebar() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border !bg-background !top-20 !h-[calc(100vh-5rem)]">
+    <Sidebar collapsible="icon" className="border-r border-border !bg-background !top-14 sm:!top-16 !h-[calc(100vh-3.5rem)] sm:!h-[calc(100vh-4rem)]">
       <SidebarContent className="pt-2">
-        {/* Logo section */}
-        {!collapsed && (
-          <div className="flex items-center justify-center py-4 px-3">
-            <MeloLogo className="h-20 w-auto" />
+        {/* Logo section — hidden on mobile since header already shows it */}
+        {!collapsed && !isMobile && (
+          <div className="flex items-center justify-center py-3 px-3">
+            <MeloLogo className="h-16 w-auto" />
           </div>
         )}
 

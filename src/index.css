@@ -141,3 +141,8 @@
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(-8px); }
 }
+
+/* Safe area for mobile devices with notches/home indicators */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
