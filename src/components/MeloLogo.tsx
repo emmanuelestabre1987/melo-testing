@@ -10,7 +10,7 @@ const MeloLogo = ({ className = "h-12" }: { className?: string }) => (
     <circle cx="100" cy="42" r="32" fill="#C8A264" opacity="0.75" />
 
     {/* Cross on peak — clearly visible against sun */}
-    <line x1="80" y1="30" x2="80" y2="52" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+    <line x1="80" y1="26" x2="80" y2="56" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
     <line x1="71" y1="38" x2="89" y2="38" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
 
     {/* WiFi arcs from cross — digital connectivity */}
