@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Plus, LogOut, User } from "lucide-react";
+import { Bell, Plus, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -19,23 +19,56 @@ interface AppHeaderProps {
   filterSlot?: React.ReactNode;
 }
 
-const SierrasSVG = () => (
-  <svg
-    viewBox="0 0 400 60"
-    className="absolute bottom-0 left-0 w-full h-[30px] opacity-[0.08]"
-    preserveAspectRatio="none"
-  >
-    <path
-      d="M0 60 L0 38 Q20 32 35 36 Q55 18 75 28 Q95 14 110 22 Q130 8 150 18 Q170 6 190 16 Q210 4 230 14 Q250 8 270 20 Q290 10 310 22 Q330 6 350 18 Q370 12 390 24 L400 20 L400 60 Z"
-      fill="hsl(var(--accent))"
-      className="animate-[sierras-sway_8s_ease-in-out_infinite]"
-    />
-    <path
-      d="M0 60 L0 44 Q30 36 50 40 Q70 28 90 34 Q120 22 140 30 Q160 20 180 28 Q200 16 220 26 Q240 22 260 30 Q280 18 300 28 Q320 24 340 32 Q360 22 380 30 L400 28 L400 60 Z"
-      fill="hsl(var(--accent))"
-      className="animate-[sierras-sway_6s_ease-in-out_infinite_reverse]"
-    />
-  </svg>
+/** Decorative SVG: sierras silhouette + circuit-node dots blending community & digital */
+const HeaderDecoration = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    {/* Mountain silhouette — back layer */}
+    <svg
+      viewBox="0 0 800 80"
+      className="absolute bottom-0 left-0 w-full h-[50px]"
+      preserveAspectRatio="none"
+    >
+      <path
+        d="M0 80 L0 52 Q40 38 80 46 Q120 22 160 34 Q200 14 240 28 Q280 8 320 22 Q360 12 400 26 Q440 6 480 20 Q520 14 560 28 Q600 8 640 22 Q680 16 720 30 Q760 20 800 32 L800 80 Z"
+        fill="hsl(var(--accent))"
+        opacity="0.06"
+      />
+      <path
+        d="M0 80 L0 60 Q50 48 90 54 Q130 36 170 44 Q210 28 250 38 Q290 20 330 32 Q370 24 410 36 Q450 18 490 30 Q530 26 570 36 Q610 22 650 34 Q690 28 730 38 Q770 30 800 40 L800 80 Z"
+        fill="hsl(var(--accent))"
+        opacity="0.04"
+      />
+    </svg>
+
+    {/* Circuit/connectivity dots — digital layer */}
+    <svg
+      viewBox="0 0 800 80"
+      className="absolute inset-0 w-full h-full"
+    >
+      {/* Horizontal trace line */}
+      <line x1="60" y1="65" x2="740" y2="65" stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.06" />
+      
+      {/* Node dots along the trace */}
+      {[100, 200, 340, 460, 580, 700].map((x, i) => (
+        <g key={i}>
+          <circle cx={x} cy={65} r="1.5" fill="hsl(var(--primary))" opacity="0.1" />
+          {/* Vertical micro-traces going up */}
+          <line
+            x1={x} y1={65} x2={x} y2={65 - (8 + (i % 3) * 4)}
+            stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.06"
+          />
+          <circle cx={x} cy={65 - (8 + (i % 3) * 4)} r="1" fill="hsl(var(--primary))" opacity="0.08" />
+        </g>
+      ))}
+
+      {/* WiFi arcs — top right corner, very subtle */}
+      <g transform="translate(760, 14)" opacity="0.06">
+        <path d="M-6 0 A6 6 0 0 1 6 0" fill="none" stroke="hsl(var(--primary))" strokeWidth="1" />
+        <path d="M-10 -2 A10 10 0 0 1 10 -2" fill="none" stroke="hsl(var(--primary))" strokeWidth="0.8" />
+        <circle cx="0" cy="3" r="1.2" fill="hsl(var(--primary))" />
+      </g>
+    </svg>
+  </div>
 );
 
 const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) => {
@@ -55,8 +88,8 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
   };
 
   return (
-    <header className="relative overflow-hidden border-b border-border bg-card">
-      <SierrasSVG />
+    <header className="relative overflow-hidden border-b border-border/60 bg-card/70 backdrop-blur-sm">
+      <HeaderDecoration />
 
       <div className="relative z-10 flex items-center justify-between px-3 h-16">
         {/* Left: sidebar trigger + brand */}
