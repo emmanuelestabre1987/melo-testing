@@ -79,9 +79,7 @@ const DarCarga = () => {
     }
   };
 
-  // Determine which steps show origin/destination
-  const origenStep = tipoEnvio === "encomienda" ? 4 : 5;
-  const destinoStep = tipoEnvio === "encomienda" ? 5 : 6;
+  const rutaStep = tipoEnvio === "encomienda" ? 4 : 5;
 
   return (
     <WizardLayout
