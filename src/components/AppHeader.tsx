@@ -1,8 +1,16 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Plus } from "lucide-react";
+import { Bell, Plus, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import logoMelo from "@/assets/logo-melo.png";
 
 interface AppHeaderProps {
@@ -33,9 +41,18 @@ const SierrasSVG = () => (
 const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   const isTablero = location.pathname === "/tablero";
+
+  const userName = user?.user_metadata?.full_name || user?.email?.split("@")[0] || "Usuario";
+  const userEmail = user?.email || "";
+  const userInitial = (userName[0] || "U").toUpperCase();
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
 
   return (
     <header className="relative overflow-hidden border-b border-border bg-card">
@@ -77,10 +94,31 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
               </span>
             )}
           </Button>
+
           {user && (
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground text-xs font-bold">
-              {(user.email?.[0] || "U").toUpperCase()}
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex h-9 w-9 items-center justify-center rounded-full bg-accent text-accent-foreground text-sm font-bold shadow-sm transition-colors hover:bg-accent/80 focus:outline-none focus:ring-2 focus:ring-ring">
+                  {userInitial}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col gap-1">
+                    <p className="text-sm font-semibold text-foreground">{userName}</p>
+                    <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar sesión
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>
