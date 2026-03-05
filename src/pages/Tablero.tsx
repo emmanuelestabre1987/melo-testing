@@ -4,10 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw, LogOut, Bell } from "lucide-react";
+import { Truck, Package, Users, MapPin, ArrowRight, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
+import AppHeader from "@/components/AppHeader";
 
 interface Publication {
   id: string;
