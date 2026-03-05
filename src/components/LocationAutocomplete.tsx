@@ -66,7 +66,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
   }, []);
 
   return (
-    <div ref={containerRef} className="relative">
+    <div ref={containerRef} className="relative mb-4">
       {label && <label className="text-sm font-medium text-foreground mb-1 block">{label}</label>}
       <div className="relative">
         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
