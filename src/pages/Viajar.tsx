@@ -7,6 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import FrecuenciaStep, { FrecuenciaData, isFrecuenciaValid } from "@/components/FrecuenciaStep";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+import RouteMap from "@/components/RouteMap";
+
+interface Coords { lat: number; lon: number; }
 
 const Viajar = () => {
   const navigate = useNavigate();
@@ -16,7 +20,9 @@ const Viajar = () => {
   const [cantidadPersonas, setCantidadPersonas] = useState("");
   const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [origen, setOrigen] = useState("");
+  const [origenCoords, setOrigenCoords] = useState<Coords>();
   const [destino, setDestino] = useState("");
+  const [destinoCoords, setDestinoCoords] = useState<Coords>();
   const [saving, setSaving] = useState(false);
 
   const totalSteps = 4;
@@ -36,7 +42,12 @@ const Viajar = () => {
       const { error } = await supabase.from("publications").insert({
         user_id: user!.id,
         operation_type: "viajar",
-        data: JSON.parse(JSON.stringify({ cantidadPersonas, frecuencia: frecuenciaData, origen, destino })),
+        data: JSON.parse(JSON.stringify({
+          cantidadPersonas,
+          frecuencia: frecuenciaData,
+          origen, origenCoords,
+          destino, destinoCoords,
+        })),
       });
       setSaving(false);
       if (error) {
@@ -82,13 +93,25 @@ const Viajar = () => {
       {step === 3 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Origen</h3>
-          <div className="space-y-2"><Label>¿Desde dónde salís?</Label><Input placeholder="Ej: San Marcos Sierras" value={origen} onChange={(e) => setOrigen(e.target.value)} /></div>
+          <LocationAutocomplete
+            value={origen}
+            onChange={(val, coords) => { setOrigen(val); if (coords) setOrigenCoords(coords); }}
+            placeholder="Ej: San Marcos Sierras"
+            label="¿Desde dónde salís?"
+          />
+          {origenCoords && <RouteMap origin={origenCoords} destination={destinoCoords} />}
         </div>
       )}
       {step === 4 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Destino</h3>
-          <div className="space-y-2"><Label>¿A dónde vas?</Label><Input placeholder="Ej: Córdoba Capital" value={destino} onChange={(e) => setDestino(e.target.value)} /></div>
+          <LocationAutocomplete
+            value={destino}
+            onChange={(val, coords) => { setDestino(val); if (coords) setDestinoCoords(coords); }}
+            placeholder="Ej: Córdoba Capital"
+            label="¿A dónde vas?"
+          />
+          <RouteMap origin={origenCoords} destination={destinoCoords} />
         </div>
       )}
     </WizardLayout>
