@@ -23,7 +23,39 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const coordsRegex = /^(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)$/;
+
+  const reverseGeocode = useCallback(async (lat: number, lon: number) => {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+      );
+      const data = await res.json();
+      if (data.display_name) {
+        setSuggestions([{ place_id: data.place_id, display_name: data.display_name, lat: String(lat), lon: String(lon) }]);
+        setOpen(true);
+      }
+    } catch {
+      // Still set coords even if reverse fails
+      onChange(`${lat}, ${lon}`, { lat, lon });
+    } finally {
+      setLoading(false);
+    }
+  }, [onChange]);
+
   const search = useCallback(async (query: string) => {
+    // Check if input is coordinates
+    const match = query.trim().match(coordsRegex);
+    if (match) {
+      const lat = parseFloat(match[1]);
+      const lon = parseFloat(match[2]);
+      if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) {
+        reverseGeocode(lat, lon);
+        return;
+      }
+    }
+
     if (query.length < 3) {
       setSuggestions([]);
       return;
@@ -41,7 +73,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [reverseGeocode]);
 
   const handleInput = (val: string) => {
     onChange(val);
@@ -73,7 +105,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
         <Input
           value={value}
           onChange={(e) => handleInput(e.target.value)}
-          placeholder={placeholder || "Buscar ubicación..."}
+          placeholder={placeholder || "Buscar ubicación o coordenadas (-31.4, -64.1)..."}
           className="pl-9 pr-9"
           onFocus={() => suggestions.length > 0 && setOpen(true)}
         />
