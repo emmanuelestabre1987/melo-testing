@@ -130,6 +130,11 @@
   .shadow-card-hover {
     box-shadow: 0 8px 24px -4px hsl(233 17% 20% / 0.14);
   }
+  /* Logo blend — makes PNG background invisible against any matching surface */
+  .logo-blend {
+    mix-blend-mode: multiply;
+    filter: contrast(1.02);
+  }
 }
 
 @keyframes sierras-sway {
