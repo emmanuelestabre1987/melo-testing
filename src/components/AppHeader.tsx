@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import logoMelo from "@/assets/logo-melo.png";
+import MeloLogo from "@/components/MeloLogo";
 
 interface AppHeaderProps {
   pendingCount?: number;
@@ -22,31 +22,23 @@ interface AppHeaderProps {
 /** Sharp pointed sierras + circuit traces — community meets digital */
 const HeaderDecoration = () => (
   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-    {/* Sierras puntiagudas — capa trasera */}
     <svg
       viewBox="0 0 1200 80"
-      className="absolute bottom-0 left-0 w-full h-[60px]"
+      className="absolute bottom-0 left-0 w-full h-[50px]"
       preserveAspectRatio="none"
     >
-      {/* Back mountain range — darker, taller */}
       <path
-        d="M0 80 L0 55 L40 30 L70 50 L100 18 L130 42 L170 8 L210 38 L240 15 L275 45 L310 12 L350 40 L380 20 L420 48 L460 10 L500 35 L540 22 L580 50 L610 14 L650 42 L690 6 L730 38 L770 18 L810 45 L850 10 L890 36 L930 20 L970 48 L1010 8 L1050 40 L1090 22 L1130 46 L1170 16 L1200 35 L1200 80 Z"
+        d="M0 80 L0 52 L40 30 L70 50 L100 18 L130 42 L170 8 L210 38 L240 15 L275 45 L310 12 L350 40 L380 20 L420 48 L460 10 L500 35 L540 22 L580 50 L610 14 L650 42 L690 6 L730 38 L770 18 L810 45 L850 10 L890 36 L930 20 L970 48 L1010 8 L1050 40 L1090 22 L1130 46 L1170 16 L1200 35 L1200 80 Z"
         fill="hsl(var(--accent))"
         opacity="0.08"
       />
-      {/* Front mountain range — lighter, shorter */}
       <path
         d="M0 80 L0 62 L50 42 L80 58 L120 32 L155 52 L190 28 L230 50 L265 35 L300 55 L340 26 L380 48 L420 30 L460 54 L500 22 L540 46 L580 32 L620 56 L660 28 L700 50 L740 34 L780 55 L820 25 L860 48 L900 36 L940 56 L980 30 L1020 52 L1060 38 L1100 55 L1140 32 L1180 50 L1200 42 L1200 80 Z"
         fill="hsl(var(--accent))"
         opacity="0.05"
       />
     </svg>
-
-    {/* Circuit connectivity trace — digital layer */}
-    <svg
-      viewBox="0 0 1200 80"
-      className="absolute inset-0 w-full h-full"
-    >
+    <svg viewBox="0 0 1200 80" className="absolute inset-0 w-full h-full">
       <line x1="80" y1="68" x2="1120" y2="68" stroke="hsl(var(--primary))" strokeWidth="0.5" opacity="0.05" />
       {[150, 300, 480, 650, 820, 1000].map((x, i) => (
         <g key={i}>
@@ -80,15 +72,13 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
       <HeaderDecoration />
 
       <div className="relative z-10 flex items-center justify-between px-3 h-full">
-        {/* Left: sidebar trigger + brand */}
         <div className="flex items-center gap-2">
           <SidebarTrigger className="h-8 w-8" />
           <button onClick={() => navigate("/tablero")} className="flex items-center gap-2">
-            <img src={logoMelo} alt="MELO Logo" className="h-12 object-contain mix-blend-multiply" />
+            <MeloLogo className="h-12 w-auto" />
           </button>
         </div>
 
-        {/* Right: actions */}
         <div className="flex items-center gap-1.5">
           {isTablero && (
             <Button

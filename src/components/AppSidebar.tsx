@@ -14,7 +14,7 @@ import {
   SidebarFooter,
   useSidebar,
 } from "@/components/ui/sidebar";
-import logoMelo from "@/assets/logo-melo.png";
+import MeloLogo from "@/components/MeloLogo";
 
 const mainItems = [
   { title: "Tablero", url: "/tablero", icon: LayoutDashboard },
@@ -43,9 +43,7 @@ export function AppSidebar() {
         {/* Logo section */}
         {!collapsed && (
           <div className="flex items-center justify-center py-4 px-3">
-            <div className="relative h-20 w-full flex items-center justify-center bg-background rounded-lg">
-              <img src={logoMelo} alt="MELO" className="h-20 object-contain mix-blend-multiply" />
-            </div>
+            <MeloLogo className="h-20 w-auto" />
           </div>
         )}
 
