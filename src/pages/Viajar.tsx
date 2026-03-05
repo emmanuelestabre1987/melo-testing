@@ -25,7 +25,7 @@ const Viajar = () => {
   const [destinoCoords, setDestinoCoords] = useState<Coords>();
   const [saving, setSaving] = useState(false);
 
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   const handleBack = () => {
     if (step === 1) navigate("/seleccionar-operacion");
