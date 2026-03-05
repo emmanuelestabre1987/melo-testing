@@ -128,6 +128,14 @@ const Tablero = () => {
             <Button variant="ghost" size="icon" onClick={() => { signOut(); navigate("/"); }}>
               <LogOut className="h-4 w-4" />
             </Button>
+            <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/mis-matches")}>
+              <Bell className="h-4 w-4" />
+              {pendingCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                  {pendingCount}
+                </span>
+              )}
+            </Button>
             <Button variant="ghost" size="icon" onClick={fetchPublications}>
               <RefreshCw className="h-4 w-4" />
             </Button>
