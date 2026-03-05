@@ -72,6 +72,7 @@ const Viajar = () => {
   };
 
   return (
+    <AppLayout>
     <WizardLayout
       title="Quiero viajar"
       step={step}
