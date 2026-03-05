@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Bell, Plus, Search } from "lucide-react";
+import { Bell, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -7,6 +7,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 interface AppHeaderProps {
   pendingCount?: number;
   onRefresh?: () => void;
+  filterSlot?: React.ReactNode;
 }
 
 const SierrasSVG = () => (
@@ -28,7 +29,7 @@ const SierrasSVG = () => (
   </svg>
 );
 
-const AppHeader = ({ pendingCount = 0, onRefresh }: AppHeaderProps) => {
+const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
@@ -71,6 +72,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh }: AppHeaderProps) => {
               <span className="sm:hidden">Crear</span>
             </Button>
           )}
+          {filterSlot}
           <Button
             variant="ghost"
             size="icon"
