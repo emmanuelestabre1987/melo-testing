@@ -80,15 +80,15 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
         {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
       {open && suggestions.length > 0 && (
-        <ul className="absolute z-50 mt-1 w-full bg-popover border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
+        <ul className="absolute z-[9999] mt-1 w-full bg-popover border border-border rounded-md shadow-xl max-h-48 overflow-y-auto">
           {suggestions.map((s) => (
             <li
               key={s.place_id}
-              className="px-3 py-2 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground truncate"
+              className="px-3 py-2.5 text-sm cursor-pointer hover:bg-accent hover:text-accent-foreground"
               onClick={() => handleSelect(s)}
             >
-              <MapPin className="inline h-3 w-3 mr-1.5 text-muted-foreground" />
-              {s.display_name}
+              <MapPin className="inline h-3 w-3 mr-1.5 text-muted-foreground flex-shrink-0" />
+              <span className="line-clamp-2">{s.display_name}</span>
             </li>
           ))}
         </ul>
