@@ -114,6 +114,21 @@ const Tablero = () => {
     fetchPendingCount();
   }, []);
 
+  useEffect(() => {
+    if (pendingCount > 0 && !toastShownRef.current) {
+      toastShownRef.current = true;
+      toast({
+        title: `Tenés ${pendingCount} solicitud${pendingCount > 1 ? "es" : ""} de match pendiente${pendingCount > 1 ? "s" : ""}`,
+        description: "Revisalas en Mis Matches para aceptar o rechazar.",
+        action: (
+          <Button size="sm" variant="outline" onClick={() => navigate("/mis-matches")}>
+            Ver
+          </Button>
+        ),
+      });
+    }
+  }, [pendingCount]);
+
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     return d.toLocaleDateString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
