@@ -25,7 +25,7 @@ const operations = [
     description: "Busco un viaje como pasajero",
     icon: Users,
     path: "/viajar",
-    gradient: "gradient-primary",
+    gradient: "gradient-cta",
   },
 ];
 
