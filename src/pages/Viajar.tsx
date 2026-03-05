@@ -64,9 +64,8 @@ const Viajar = () => {
     if (saving) return true;
     switch (step) {
       case 1: return !cantidadPersonas;
-      case 2: return !isFrecuenciaValid(frecuencia);
-      case 3: return !origen;
-      case 4: return !destino;
+      case 2: return !origen || !destino;
+      case 3: return !isFrecuenciaValid(frecuencia);
       default: return false;
     }
   };
