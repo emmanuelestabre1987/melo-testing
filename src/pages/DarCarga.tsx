@@ -153,6 +153,7 @@ const DarCarga = () => {
         <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
+    </AppLayout>
   );
 };
 

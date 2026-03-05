@@ -142,6 +142,7 @@ const Transportar = () => {
         </div>
       )}
     </WizardLayout>
+    </AppLayout>
   );
 };
 

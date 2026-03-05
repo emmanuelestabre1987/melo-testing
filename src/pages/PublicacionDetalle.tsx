@@ -287,6 +287,7 @@ const PublicacionDetalle = () => {
         </DialogContent>
       </Dialog>
     </div>
+    </AppLayout>
   );
 };
 

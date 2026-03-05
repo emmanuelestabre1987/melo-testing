@@ -308,6 +308,7 @@ const MisMatches = () => {
         </div>
       </div>
     </div>
+    </AppLayout>
   );
 };
 

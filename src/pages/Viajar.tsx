@@ -110,6 +110,7 @@ const Viajar = () => {
         <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
+    </AppLayout>
   );
 };
 
