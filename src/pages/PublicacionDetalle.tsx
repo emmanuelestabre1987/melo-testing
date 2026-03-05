@@ -158,7 +158,8 @@ const PublicacionDetalle = () => {
   const shortId = pub.id.slice(0, 8).toUpperCase();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <AppLayout>
+    <div className="flex flex-col bg-background">
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-sm px-4 py-3">
         <div className="mx-auto flex max-w-lg items-center gap-3">
