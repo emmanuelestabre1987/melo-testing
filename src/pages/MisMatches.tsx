@@ -95,10 +95,10 @@ const MisMatches = () => {
 
     const pubMap = new Map(pubs?.map((p) => [p.id, p]) ?? []);
 
-    // Filter: only matches on MY publications where I'm NOT the requester
+    // Filter: matches on MY publications (incoming - I need to accept/reject)
     const incomingMatches = matchData.filter((m) => {
       const pub = pubMap.get(m.publication_id);
-      return pub && pub.user_id === user.id && m.user_id !== user.id;
+      return pub && pub.user_id === user.id;
     });
 
     // Also include matches I sent (outgoing) so user can see status
