@@ -201,7 +201,7 @@ const Tablero = () => {
         )}
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

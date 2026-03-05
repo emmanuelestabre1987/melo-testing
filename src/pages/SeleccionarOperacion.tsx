@@ -63,7 +63,7 @@ const SeleccionarOperacion = () => {
           </div>
         </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 
