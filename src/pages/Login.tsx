@@ -50,9 +50,11 @@ const Login = () => {
         <path d="M0 80 L0 58 Q40 44 70 52 Q100 36 130 44 Q160 28 190 38 Q220 22 250 34 Q280 28 310 40 Q340 24 370 36 L400 32 L400 80 Z" fill="hsl(var(--accent))" />
       </svg>
 
-      <div className="relative z-10 w-full max-w-sm animate-slide-up">
+      <div className="relative z-10 w-full max-w-sm animate-slide-up" style={{ isolation: "auto" }}>
         <div className="mb-8 flex flex-col items-center gap-3">
-          <img src={logoMelo} alt="MELO Logo" className="h-28 object-contain mix-blend-multiply" />
+          <div className="bg-background rounded-xl p-2">
+            <img src={logoMelo} alt="MELO Logo" className="h-28 object-contain mix-blend-multiply" />
+          </div>
           <p className="text-center text-sm text-muted-foreground">
             Logística compartida para las sierras
           </p>
