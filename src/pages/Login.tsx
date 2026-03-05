@@ -44,10 +44,18 @@ const Login = () => {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-background px-4 overflow-hidden">
-      {/* Sierras decorativas */}
-      <svg viewBox="0 0 400 80" className="absolute bottom-0 left-0 w-full h-[100px] opacity-[0.08]" preserveAspectRatio="none">
-        <path d="M0 80 L0 50 Q30 30 60 42 Q90 20 120 32 Q150 10 180 24 Q210 8 240 20 Q270 12 300 28 Q330 10 360 22 Q380 16 400 26 L400 80 Z" fill="hsl(var(--accent))" />
-        <path d="M0 80 L0 58 Q40 44 70 52 Q100 36 130 44 Q160 28 190 38 Q220 22 250 34 Q280 28 310 40 Q340 24 370 36 L400 32 L400 80 Z" fill="hsl(var(--accent))" />
+      {/* Sierras decorativas — puntiagudas como el header */}
+      <svg viewBox="0 0 1200 80" className="absolute bottom-0 left-0 w-full h-[80px]" preserveAspectRatio="none">
+        <path
+          d="M0 80 L0 52 L40 30 L70 50 L100 18 L130 42 L170 8 L210 38 L240 15 L275 45 L310 12 L350 40 L380 20 L420 48 L460 10 L500 35 L540 22 L580 50 L610 14 L650 42 L690 6 L730 38 L770 18 L810 45 L850 10 L890 36 L930 20 L970 48 L1010 8 L1050 40 L1090 22 L1130 46 L1170 16 L1200 35 L1200 80 Z"
+          fill="hsl(var(--accent))"
+          opacity="0.08"
+        />
+        <path
+          d="M0 80 L0 62 L50 42 L80 58 L120 32 L155 52 L190 28 L230 50 L265 35 L300 55 L340 26 L380 48 L420 30 L460 54 L500 22 L540 46 L580 32 L620 56 L660 28 L700 50 L740 34 L780 55 L820 25 L860 48 L900 36 L940 56 L980 30 L1020 52 L1060 38 L1100 55 L1140 32 L1180 50 L1200 42 L1200 80 Z"
+          fill="hsl(var(--accent))"
+          opacity="0.05"
+        />
       </svg>
 
       <div className="relative z-10 w-full max-w-sm animate-slide-up">
