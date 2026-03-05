@@ -72,10 +72,9 @@ const DarCarga = () => {
       case 1: return !tipoEnvio;
       case 2: return !tipoCarga;
       case 3: return tipoEnvio === "encomienda" ? !m3 : !unidad;
-      case 4: return tipoEnvio === "encomienda" ? !origen : !cantidad;
-      case 5: return tipoEnvio === "encomienda" ? !destino : !origen;
-      case 6: return tipoEnvio === "encomienda" ? !isFrecuenciaValid(frecuencia) : !destino;
-      case 7: return !isFrecuenciaValid(frecuencia);
+      case 4: return tipoEnvio === "encomienda" ? (!origen || !destino) : !cantidad;
+      case 5: return tipoEnvio === "encomienda" ? !isFrecuenciaValid(frecuencia) : (!origen || !destino);
+      case 6: return !isFrecuenciaValid(frecuencia);
       default: return false;
     }
   };
