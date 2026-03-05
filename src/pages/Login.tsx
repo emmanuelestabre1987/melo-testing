@@ -52,8 +52,7 @@ const Login = () => {
 
       <div className="relative z-10 w-full max-w-sm animate-slide-up">
         <div className="mb-8 flex flex-col items-center gap-3">
-          <img src={logoMelo} alt="MELO Logo" className="h-24 w-24 rounded-full object-cover shadow-md" />
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">MELO</h1>
+          <img src={logoMelo} alt="MELO Logo" className="h-32 w-32 rounded-full object-cover shadow-lg" />
           <p className="text-center text-sm text-muted-foreground">
             Logística compartida para las sierras
           </p>

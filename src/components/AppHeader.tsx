@@ -41,20 +41,12 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
     <header className="relative overflow-hidden border-b border-border bg-card">
       <SierrasSVG />
 
-      <div className="relative z-10 flex items-center justify-between px-3 h-14">
+      <div className="relative z-10 flex items-center justify-between px-3 h-16">
         {/* Left: sidebar trigger + brand */}
         <div className="flex items-center gap-2">
           <SidebarTrigger className="h-8 w-8" />
           <button onClick={() => navigate("/tablero")} className="flex items-center gap-2">
-            <img src={logoMelo} alt="MELO Logo" className="h-10 w-10 rounded-full object-cover shadow-sm" />
-            <div className="hidden sm:block">
-              <h1 className="text-base font-extrabold tracking-tight text-foreground leading-none">
-                MELO
-              </h1>
-              <p className="text-[9px] font-medium text-muted-foreground leading-tight">
-                Logística para tu comunidad
-              </p>
-            </div>
+            <img src={logoMelo} alt="MELO Logo" className="h-14 w-14 rounded-full object-cover shadow-md" />
           </button>
         </div>
 
