@@ -13,6 +13,7 @@ import Viajar from "./pages/Viajar";
 import Publicado from "./pages/Publicado";
 import Tablero from "./pages/Tablero";
 import PublicacionDetalle from "./pages/PublicacionDetalle";
+import MisMatches from "./pages/MisMatches";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
