@@ -9,6 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import FrecuenciaStep, { FrecuenciaData, isFrecuenciaValid } from "@/components/FrecuenciaStep";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+import RouteMap from "@/components/RouteMap";
+
+interface Coords { lat: number; lon: number; }
 
 const Transportar = () => {
   const navigate = useNavigate();
@@ -16,7 +20,10 @@ const Transportar = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
   const [tipoCarga, setTipoCarga] = useState("");
-  const [ruta, setRuta] = useState({ origen: "", destino: "" });
+  const [rutaOrigen, setRutaOrigen] = useState("");
+  const [rutaOrigenCoords, setRutaOrigenCoords] = useState<Coords>();
+  const [rutaDestino, setRutaDestino] = useState("");
+  const [rutaDestinoCoords, setRutaDestinoCoords] = useState<Coords>();
   const [tipoVehiculo, setTipoVehiculo] = useState("");
   const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [espacio, setEspacio] = useState("");
@@ -36,6 +43,12 @@ const Transportar = () => {
       const frecuenciaData = {
         ...frecuencia,
         fecha: frecuencia.fecha ? frecuencia.fecha.toISOString() : undefined,
+      };
+      const ruta = {
+        origen: rutaOrigen,
+        origenCoords: rutaOrigenCoords,
+        destino: rutaDestino,
+        destinoCoords: rutaDestinoCoords,
       };
       const { error } = await supabase.from("publications").insert([{
         user_id: user!.id,
@@ -57,7 +70,7 @@ const Transportar = () => {
     if (saving) return true;
     switch (step) {
       case 1: return !tipoCarga;
-      case 2: return !ruta.origen || !ruta.destino;
+      case 2: return !rutaOrigen || !rutaDestino;
       case 3: return !tipoVehiculo;
       case 4: return !isFrecuenciaValid(frecuencia);
       case 5: return tipoCarga === "carga" && !espacio;
@@ -85,8 +98,19 @@ const Transportar = () => {
       {step === 2 && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Cargá tu ruta</h3>
-          <div className="space-y-2"><Label>Origen</Label><Input placeholder="Ej: San Marcos Sierras" value={ruta.origen} onChange={(e) => setRuta({ ...ruta, origen: e.target.value })} /></div>
-          <div className="space-y-2"><Label>Destino</Label><Input placeholder="Ej: Córdoba Capital" value={ruta.destino} onChange={(e) => setRuta({ ...ruta, destino: e.target.value })} /></div>
+          <LocationAutocomplete
+            value={rutaOrigen}
+            onChange={(val, coords) => { setRutaOrigen(val); if (coords) setRutaOrigenCoords(coords); }}
+            placeholder="Ej: San Marcos Sierras"
+            label="Origen"
+          />
+          <LocationAutocomplete
+            value={rutaDestino}
+            onChange={(val, coords) => { setRutaDestino(val); if (coords) setRutaDestinoCoords(coords); }}
+            placeholder="Ej: Córdoba Capital"
+            label="Destino"
+          />
+          <RouteMap origin={rutaOrigenCoords} destination={rutaDestinoCoords} />
         </div>
       )}
       {step === 3 && (

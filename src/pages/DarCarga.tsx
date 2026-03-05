@@ -9,6 +9,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import FrecuenciaStep, { FrecuenciaData, isFrecuenciaValid } from "@/components/FrecuenciaStep";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+import RouteMap from "@/components/RouteMap";
+
+interface Coords { lat: number; lon: number; }
 
 const DarCarga = () => {
   const navigate = useNavigate();
@@ -21,12 +25,12 @@ const DarCarga = () => {
   const [cantidad, setCantidad] = useState("");
   const [m3, setM3] = useState("");
   const [origen, setOrigen] = useState("");
+  const [origenCoords, setOrigenCoords] = useState<Coords>();
   const [destino, setDestino] = useState("");
+  const [destinoCoords, setDestinoCoords] = useState<Coords>();
   const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [saving, setSaving] = useState(false);
 
-  // encomienda: tipo(1) → tipoCarga(2) → m3(3) → origen(4) → destino(5) → frecuencia(6)
-  // carga-general: tipo(1) → tipoCarga(2) → unidad(3) → cantidad(4) → origen(5) → destino(6) → frecuencia(7)
   const totalSteps = tipoEnvio === "encomienda" ? 6 : 7;
 
   const handleBack = () => {
@@ -44,7 +48,12 @@ const DarCarga = () => {
       const { error } = await supabase.from("publications").insert([{
         user_id: user!.id,
         operation_type: "dar-carga",
-        data: JSON.parse(JSON.stringify({ tipoEnvio, tipoCarga, unidad, cantidad, m3, origen, destino, frecuencia: frecuenciaData })),
+        data: JSON.parse(JSON.stringify({
+          tipoEnvio, tipoCarga, unidad, cantidad, m3,
+          origen, origenCoords,
+          destino, destinoCoords,
+          frecuencia: frecuenciaData,
+        })),
       }]);
       setSaving(false);
       if (error) {
@@ -70,6 +79,10 @@ const DarCarga = () => {
       default: return false;
     }
   };
+
+  // Determine which steps show origin/destination
+  const origenStep = tipoEnvio === "encomienda" ? 4 : 5;
+  const destinoStep = tipoEnvio === "encomienda" ? 5 : 6;
 
   return (
     <WizardLayout
@@ -119,19 +132,31 @@ const DarCarga = () => {
           </div>
         </div>
       )}
-      {((tipoEnvio === "encomienda" && step === 4) || (tipoEnvio === "carga-general" && step === 5)) && (
+      {step === origenStep && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Origen de retiro</h3>
-          <div className="space-y-2"><Label>Dirección o referencia</Label><Input placeholder="Ej: San Marcos Sierras" value={origen} onChange={(e) => setOrigen(e.target.value)} /></div>
+          <LocationAutocomplete
+            value={origen}
+            onChange={(val, coords) => { setOrigen(val); if (coords) setOrigenCoords(coords); }}
+            placeholder="Ej: San Marcos Sierras"
+            label="Dirección o referencia"
+          />
+          {origenCoords && <RouteMap origin={origenCoords} destination={destinoCoords} />}
         </div>
       )}
-      {((tipoEnvio === "encomienda" && step === 5) || (tipoEnvio === "carga-general" && step === 6)) && (
+      {step === destinoStep && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-foreground">Destino de la carga</h3>
-          <div className="space-y-2"><Label>Dirección o referencia</Label><Input placeholder="Ej: Córdoba Capital" value={destino} onChange={(e) => setDestino(e.target.value)} /></div>
+          <LocationAutocomplete
+            value={destino}
+            onChange={(val, coords) => { setDestino(val); if (coords) setDestinoCoords(coords); }}
+            placeholder="Ej: Córdoba Capital"
+            label="Dirección o referencia"
+          />
+          <RouteMap origin={origenCoords} destination={destinoCoords} />
         </div>
       )}
-      {((tipoEnvio === "encomienda" && step === 6) || (tipoEnvio === "carga-general" && step === 7)) && (
+      {step === totalSteps && (
         <FrecuenciaStep value={frecuencia} onChange={setFrecuencia} />
       )}
     </WizardLayout>
