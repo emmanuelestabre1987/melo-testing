@@ -11,7 +11,7 @@
     /* Gris Cemento dark for text */
     --foreground: 233 17% 20%;
 
-    --card: 37 40% 95%;
+    --card: 37 52% 89%;
     --card-foreground: 233 17% 20%;
 
     --popover: 37 40% 95%;
@@ -42,10 +42,10 @@
 
     --radius: 0.75rem;
 
-    /* Header bg matching logo cream */
-    --header-background: 42 47% 90%;
+    /* Unified background for header & sidebar */
+    --header-background: 37 52% 89%;
 
-    --sidebar-background: 37 40% 95%;
+    --sidebar-background: 37 52% 89%;
     --sidebar-foreground: 233 17% 20%;
     --sidebar-primary: 200 100% 36%;
     --sidebar-primary-foreground: 0 0% 100%;
