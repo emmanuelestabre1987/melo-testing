@@ -43,7 +43,7 @@ export function AppSidebar() {
         {/* Logo section */}
         {!collapsed && (
           <div className="flex items-center justify-center py-4 px-3">
-            <img src={logoMelo} alt="MELO" className="h-20 object-contain" />
+            <img src={logoMelo} alt="MELO" className="h-20 object-contain mix-blend-multiply" />
           </div>
         )}
 
