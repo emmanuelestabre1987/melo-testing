@@ -34,6 +34,7 @@ const App = () => (
             <Route path="/publicado" element={<ProtectedRoute><Publicado /></ProtectedRoute>} />
             <Route path="/tablero" element={<ProtectedRoute><Tablero /></ProtectedRoute>} />
             <Route path="/publicacion/:id" element={<ProtectedRoute><PublicacionDetalle /></ProtectedRoute>} />
+            <Route path="/mis-matches" element={<ProtectedRoute><MisMatches /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

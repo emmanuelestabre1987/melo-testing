@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw, LogOut } from "lucide-react";
+import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw, LogOut, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
