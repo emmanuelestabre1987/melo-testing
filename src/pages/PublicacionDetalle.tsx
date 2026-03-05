@@ -127,10 +127,12 @@ const PublicacionDetalle = () => {
 
   if (!pub) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-        <p className="text-muted-foreground">Publicación no encontrada</p>
-        <Button className="mt-4" onClick={() => navigate("/tablero")}>Volver al tablero</Button>
-      </div>
+      <AppLayout>
+        <div className="flex flex-col items-center justify-center py-20 bg-background px-4">
+          <p className="text-muted-foreground">Publicación no encontrada</p>
+          <Button className="mt-4" onClick={() => navigate("/tablero")}>Volver al tablero</Button>
+        </div>
+      </AppLayout>
     );
   }
 
