@@ -52,9 +52,9 @@ const Login = () => {
 
       <div className="relative z-10 w-full max-w-sm animate-slide-up">
         <div className="mb-8 flex flex-col items-center gap-3">
-          <MeloLogo className="h-28 w-auto" />
+          <MeloLogo className="h-40 w-auto" />
           <p className="text-center text-sm text-muted-foreground">
-            Logística compartida para las sierras
+            Logística para tu comunidad
           </p>
         </div>
 
