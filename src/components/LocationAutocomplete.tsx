@@ -105,7 +105,7 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
         <Input
           value={value}
           onChange={(e) => handleInput(e.target.value)}
-          placeholder={placeholder || "Buscar ubicación..."}
+          placeholder={placeholder || "Buscar ubicación o coordenadas (-31.4, -64.1)..."}
           className="pl-9 pr-9"
           onFocus={() => suggestions.length > 0 && setOpen(true)}
         />
