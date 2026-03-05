@@ -68,7 +68,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
   };
 
   return (
-    <header className="relative overflow-hidden border-b border-border/40 h-16 bg-background">
+    <header className="relative overflow-hidden border-b border-border/40 h-20 bg-background z-50">
       <HeaderDecoration />
 
       <div className="relative z-10 flex items-center justify-between px-3 h-full">
