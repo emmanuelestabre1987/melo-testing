@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw, LogOut } from "lucide-react";
+import { Truck, Package, Users, MapPin, ArrowRight, Calendar, RefreshCw, LogOut, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
@@ -45,9 +45,10 @@ const getOriginDestination = (data: Json, opType: string) => {
 
 const Tablero = () => {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pendingCount, setPendingCount] = useState(0);
 
   const fetchPublications = async () => {
     setLoading(true);
@@ -84,8 +85,30 @@ const Tablero = () => {
     setLoading(false);
   };
 
+  const fetchPendingCount = async () => {
+    if (!user) return;
+    // Get matches on my publications that are pending
+    const { data: matchData } = await supabase
+      .from("matches")
+      .select("id, publication_id, user_id, status")
+      .eq("status", "pending");
+    if (matchData) {
+      const pubIds = [...new Set(matchData.map((m) => m.publication_id))];
+      if (pubIds.length > 0) {
+        const { data: pubs } = await supabase
+          .from("publications")
+          .select("id, user_id")
+          .in("id", pubIds);
+        const myPubIds = new Set(pubs?.filter((p) => p.user_id === user.id).map((p) => p.id) ?? []);
+        const count = matchData.filter((m) => myPubIds.has(m.publication_id) && m.user_id !== user.id).length;
+        setPendingCount(count);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchPublications();
+    fetchPendingCount();
   }, []);
 
   const formatDate = (iso: string) => {
@@ -104,6 +127,14 @@ const Tablero = () => {
           <div className="flex gap-2">
             <Button variant="ghost" size="icon" onClick={() => { signOut(); navigate("/"); }}>
               <LogOut className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" className="relative" onClick={() => navigate("/mis-matches")}>
+              <Bell className="h-4 w-4" />
+              {pendingCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                  {pendingCount}
+                </span>
+              )}
             </Button>
             <Button variant="ghost" size="icon" onClick={fetchPublications}>
               <RefreshCw className="h-4 w-4" />

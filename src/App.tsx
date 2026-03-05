@@ -13,6 +13,7 @@ import Viajar from "./pages/Viajar";
 import Publicado from "./pages/Publicado";
 import Tablero from "./pages/Tablero";
 import PublicacionDetalle from "./pages/PublicacionDetalle";
+import MisMatches from "./pages/MisMatches";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/publicado" element={<ProtectedRoute><Publicado /></ProtectedRoute>} />
             <Route path="/tablero" element={<ProtectedRoute><Tablero /></ProtectedRoute>} />
             <Route path="/publicacion/:id" element={<ProtectedRoute><PublicacionDetalle /></ProtectedRoute>} />
+            <Route path="/mis-matches" element={<ProtectedRoute><MisMatches /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
