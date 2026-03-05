@@ -84,7 +84,7 @@ const AppHeader = ({ pendingCount = 0, onRefresh, filterSlot }: AppHeaderProps) 
         <div className="flex items-center gap-2">
           <SidebarTrigger className="h-8 w-8" />
           <button onClick={() => navigate("/tablero")} className="flex items-center gap-2">
-            <img src={logoMelo} alt="MELO Logo" className="h-12 object-contain" />
+            <img src={logoMelo} alt="MELO Logo" className="h-12 object-contain mix-blend-multiply" />
           </button>
         </div>
 
