@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import logoMelo from "@/assets/logo-melo.png";
+import MeloLogo from "@/components/MeloLogo";
 
 const Login = () => {
   const navigate = useNavigate();
