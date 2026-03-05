@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Truck, Package, Users } from "lucide-react";
-import AppHeader from "@/components/AppHeader";
+import AppLayout from "@/components/AppLayout";
 
 const operations = [
   {
