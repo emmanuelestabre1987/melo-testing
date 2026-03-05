@@ -8,7 +8,7 @@ import { Truck, Package, Users, MapPin, ArrowRight, Calendar } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
-import AppHeader from "@/components/AppHeader";
+import AppLayout from "@/components/AppLayout";
 
 interface Publication {
   id: string;
