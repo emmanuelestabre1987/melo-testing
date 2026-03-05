@@ -31,7 +31,7 @@ const DarCarga = () => {
   const [frecuencia, setFrecuencia] = useState<FrecuenciaData>({ tipo: "" });
   const [saving, setSaving] = useState(false);
 
-  const totalSteps = tipoEnvio === "encomienda" ? 6 : 7;
+  const totalSteps = tipoEnvio === "encomienda" ? 5 : 6;
 
   const handleBack = () => {
     if (step === 1) navigate("/seleccionar-operacion");
