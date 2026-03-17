@@ -37,13 +37,15 @@ export function AppSidebar() {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Hide sidebar on mobile — we use bottom nav instead
+  if (isMobile) return null;
+
   return (
-    <Sidebar collapsible="icon" className="border-r border-border !bg-background !top-14 sm:!top-16 !h-[calc(100vh-3.5rem)] sm:!h-[calc(100vh-4rem)]">
+    <Sidebar collapsible="icon" className="border-r border-border !bg-background !top-14 sm:!top-16 !h-[calc(100dvh-3.5rem)] sm:!h-[calc(100dvh-4rem)]">
       <SidebarContent className="pt-2">
-        {/* Logo section — hidden on mobile since header already shows it */}
-        {!collapsed && !isMobile && (
+        {!collapsed && (
           <div className="flex items-center justify-center py-3 px-3">
-            <MeloLogo className="h-16 w-auto" />
+            <MeloLogo className="h-14 w-auto" />
           </div>
         )}
 
@@ -63,8 +65,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-accent/10 hover:text-accent transition-colors"
-                      activeClassName="bg-accent/15 text-accent font-semibold border-l-[3px] border-accent"
+                      className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
+                      activeClassName="bg-accent text-accent-foreground font-semibold"
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
@@ -92,8 +94,8 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       end
-                      className="hover:bg-accent/10 hover:text-accent transition-colors"
-                      activeClassName="bg-accent/15 text-accent font-semibold border-l-[3px] border-accent"
+                      className="hover:bg-accent hover:text-accent-foreground transition-colors rounded-lg"
+                      activeClassName="bg-accent text-accent-foreground font-semibold"
                     >
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.title}</span>}
