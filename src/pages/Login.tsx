@@ -64,18 +64,18 @@ const Login = () => {
             {isSignUp && (
               <div className="space-y-1.5">
                 <Label htmlFor="fullName">Nombre completo</Label>
-                <Input id="fullName" placeholder="Tu nombre" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="h-11 rounded-xl" />
+                <Input id="fullName" placeholder="Tu nombre" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
               </div>
             )}
             <div className="space-y-1.5">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required className="h-11 rounded-xl" />
+              <Input id="email" type="email" placeholder="tu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required className="h-11 rounded-xl" />
+              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
-            <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Cargando..." : isSignUp ? "Crear cuenta" : "Iniciar sesión"}
             </Button>
           </form>
