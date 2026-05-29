@@ -49,6 +49,29 @@ const FrecuenciaStep = ({ value, onChange }: FrecuenciaStepProps) => {
 
       {value.tipo === "fecha-especifica" && (
         <div className="pl-4">
+          <div className="flex gap-2 mb-2">
+            {[
+              { label: "Hoy", date: new Date() },
+              { label: "Mañana", date: (() => { const d = new Date(); d.setDate(d.getDate() + 1); return d; })() },
+            ].map((chip) => {
+              const isSel = value.fecha && value.fecha.toDateString() === chip.date.toDateString();
+              return (
+                <button
+                  key={chip.label}
+                  type="button"
+                  onClick={() => onChange({ ...value, fecha: chip.date })}
+                  className={cn(
+                    "px-3 py-1.5 rounded-full text-sm font-medium border transition-colors",
+                    isSel
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-border hover:bg-accent"
+                  )}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
+          </div>
           <Popover open={openCalendar} onOpenChange={setOpenCalendar}>
             <PopoverTrigger asChild>
               <Button

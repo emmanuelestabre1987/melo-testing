@@ -36,26 +36,34 @@ const WizardLayout = ({
     <div className="flex flex-col h-full">
       {/* Sub-header */}
       <div className="bg-background px-4 sm:px-6 pt-4 pb-3">
-        <div className="mx-auto flex max-w-md items-center gap-3">
-          <button onClick={handleBack} className="rounded-xl p-2 hover:bg-muted transition-colors">
+        <div className="mx-auto flex max-w-md items-center gap-2">
+          <button
+            onClick={handleBack}
+            aria-label="Volver"
+            className="-ml-1.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl hover:bg-muted transition-colors tap-scale"
+          >
             <ArrowLeft className="h-5 w-5 text-foreground" />
           </button>
           <div className="flex-1">
             <h2 className="text-base font-bold text-foreground">{title}</h2>
+            {totalSteps > 1 && (
             <p className="text-xs text-muted-foreground">
               Paso {step} de {totalSteps}
             </p>
+          )}
           </div>
         </div>
-        {/* Progress bar */}
-        <div className="mx-auto mt-3 max-w-md">
-          <div className="h-1.5 w-full rounded-full bg-muted">
-            <div
-              className="h-1.5 rounded-full bg-primary transition-all duration-500"
-              style={{ width: `${(step / totalSteps) * 100}%` }}
-            />
+        {/* Progress bar — oculto cuando totalSteps === 1 */}
+        {totalSteps > 1 && (
+          <div className="mx-auto mt-3 max-w-md">
+            <div className="h-1.5 w-full rounded-full bg-muted">
+              <div
+                className="h-1.5 rounded-full bg-primary transition-all duration-500"
+                style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Content */}

@@ -1,60 +1,117 @@
-/** Inline SVG logo — clean Andiamo-inspired style */
-const MeloLogo = ({ className = "h-12" }: { className?: string }) => (
-  <svg
-    viewBox="0 0 200 230"
-    className={className}
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    {/* Sun circle */}
-    <circle cx="100" cy="42" r="32" fill="hsl(24, 95%, 53%)" opacity="0.15" />
+/**
+ * Melo Envíos brand logo.
+ *
+ * Reproduces the rounded-square mark with the white "M" route (two pin dots)
+ * plus the "MELO / ENVIOS" wordmark. Colours are theme-adaptive: the mark fills
+ * with `--foreground` and the route with `--background`, so it inverts cleanly
+ * between light and dark mode.
+ *
+ * Variants:
+ *  - "mark":       just the icon square.
+ *  - "horizontal": icon + "MELO" / "ENVIOS" beside it (default — headers).
+ *  - "full":       stacked lockup (icon over wordmark — splash / login).
+ */
+type Variant = "full" | "horizontal" | "mark";
 
-    {/* Cross on peak */}
-    <line x1="80" y1="26" x2="80" y2="56" stroke="hsl(24, 95%, 53%)" strokeWidth="3.5" strokeLinecap="round" />
-    <line x1="71" y1="38" x2="89" y2="38" stroke="hsl(24, 95%, 53%)" strokeWidth="3.5" strokeLinecap="round" />
+const FG = "hsl(var(--foreground))";
+const BG = "hsl(var(--background))";
 
-    {/* WiFi arcs */}
-    <path d="M72 28 A10 10 0 0 0 88 28" fill="none" stroke="hsl(24, 95%, 53%)" strokeWidth="1.5" opacity="0.6" />
-    <path d="M67 24 A15 15 0 0 0 93 24" fill="none" stroke="hsl(24, 95%, 53%)" strokeWidth="1.2" opacity="0.4" />
-    <path d="M63 20 A19 19 0 0 0 97 20" fill="none" stroke="hsl(24, 95%, 53%)" strokeWidth="0.9" opacity="0.25" />
-
-    {/* Left mountain */}
-    <path d="M25 148 L80 42 L135 148 Z" fill="hsl(220, 14%, 20%)" />
-    {/* Right mountain */}
-    <path d="M75 148 L130 55 L185 148 Z" fill="hsl(220, 14%, 30%)" />
-
-    {/* River waves */}
+/** The rounded-square icon with the route-M. Drawn in a 100×100 box. */
+const Mark = ({ x = 0, y = 0 }: { x?: number; y?: number }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <rect x="6" y="6" width="88" height="88" rx="24" fill={FG} />
     <path
-      d="M15 150 Q40 138 65 148 Q90 158 115 146 Q140 134 165 148 Q180 156 195 148"
+      d="M30 70 L30 47 C30 35 50 35 50 55 C50 35 70 35 70 47 L70 70"
       fill="none"
-      stroke="hsl(24, 95%, 53%)"
-      strokeWidth="4.5"
+      stroke={BG}
+      strokeWidth="9"
       strokeLinecap="round"
-      opacity="0.7"
+      strokeLinejoin="round"
     />
-    <path
-      d="M20 160 Q45 148 70 158 Q95 168 120 156 Q145 144 170 158 Q183 164 198 158"
-      fill="none"
-      stroke="hsl(24, 80%, 60%)"
-      strokeWidth="3"
-      strokeLinecap="round"
-      opacity="0.4"
-    />
-
-    {/* MELO text */}
-    <text
-      x="100"
-      y="202"
-      textAnchor="middle"
-      fontFamily="'Inter', sans-serif"
-      fontWeight="800"
-      fontSize="36"
-      fill="hsl(220, 14%, 10%)"
-      letterSpacing="2"
-    >
-      MELO
-    </text>
-  </svg>
+    <circle cx="30" cy="70" r="5.6" fill={BG} />
+    <circle cx="70" cy="70" r="5.6" fill={BG} />
+  </g>
 );
+
+const MeloLogo = ({
+  className = "h-10",
+  variant = "horizontal",
+}: {
+  className?: string;
+  variant?: Variant;
+}) => {
+  if (variant === "mark") {
+    return (
+      <svg viewBox="0 0 100 100" className={className} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Melo Envíos">
+        <Mark />
+      </svg>
+    );
+  }
+
+  if (variant === "full") {
+    return (
+      <svg viewBox="0 0 200 252" className={className} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Melo Envíos">
+        <Mark x={50} y={4} />
+        <text
+          x="100"
+          y="172"
+          textAnchor="middle"
+          fontFamily="'Inter', system-ui, sans-serif"
+          fontWeight="800"
+          fontSize="54"
+          letterSpacing="3"
+          fill={FG}
+        >
+          MELO
+        </text>
+        <g stroke={FG} strokeWidth="2.5" strokeLinecap="round">
+          <line x1="44" y1="206" x2="66" y2="206" />
+          <line x1="134" y1="206" x2="156" y2="206" />
+        </g>
+        <text
+          x="100"
+          y="214"
+          textAnchor="middle"
+          fontFamily="'Inter', system-ui, sans-serif"
+          fontWeight="600"
+          fontSize="24"
+          letterSpacing="9"
+          fill={FG}
+        >
+          ENVIOS
+        </text>
+      </svg>
+    );
+  }
+
+  // horizontal
+  return (
+    <svg viewBox="0 0 372 116" className={className} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Melo Envíos">
+      <Mark x={6} y={8} />
+      <text
+        x="122"
+        y="62"
+        fontFamily="'Inter', system-ui, sans-serif"
+        fontWeight="800"
+        fontSize="50"
+        letterSpacing="2"
+        fill={FG}
+      >
+        MELO
+      </text>
+      <text
+        x="124"
+        y="92"
+        fontFamily="'Inter', system-ui, sans-serif"
+        fontWeight="600"
+        fontSize="19"
+        letterSpacing="7"
+        fill="hsl(var(--muted-foreground))"
+      >
+        ENVIOS
+      </text>
+    </svg>
+  );
+};
 
 export default MeloLogo;

@@ -8,7 +8,7 @@ const Publicado = () => {
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-background px-5 safe-bottom">
       <div className="w-full max-w-sm animate-slide-up">
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-card text-center">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-card text-center">
           <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
             <CheckCircle2 className="h-10 w-10 text-primary" />
           </div>

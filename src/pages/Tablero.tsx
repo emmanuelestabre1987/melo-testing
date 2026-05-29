@@ -1,15 +1,23 @@
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef, useMemo, lazy, Suspense } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Truck, Package, Users, MapPin, ArrowRight, Calendar } from "lucide-react";
+import { Calendar, Inbox, WifiOff, Loader2, ChevronDown, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
 import AppLayout from "@/components/AppLayout";
+import PullToRefresh from "@/components/PullToRefresh";
+import RoutePreview from "@/components/RoutePreview";
+import SegmentedControl from "@/components/SegmentedControl";
 import TableroFilters, { EMPTY_FILTERS, type PublicationFilters } from "@/components/TableroFilters";
+import { getField, getOriginDestination, getCoords, getOperationMeta, formatRelative, formatFrecuencia } from "@/lib/publications";
+import { transitionNavigate, prefetch } from "@/lib/viewTransition";
+import { cn } from "@/lib/utils";
+
+const PublicationsMap = lazy(() => import("@/components/PublicationsMap"));
+const loadDetalle = () => import("./PublicacionDetalle");
 
 interface Publication {
   id: string;
@@ -20,51 +28,44 @@ interface Publication {
   profile_name: string;
 }
 
-const operationConfig: Record<string, { label: string; icon: React.ElementType; gradient: string }> = {
-  transportar: { label: "Transportar", icon: Truck, gradient: "gradient-primary" },
-  "dar-carga": { label: "Dar carga", icon: Package, gradient: "gradient-warm" },
-  viajar: { label: "Viajar", icon: Users, gradient: "gradient-cta" },
-};
+interface MyPub {
+  id: string;
+  operation_type: string;
+  data: Json;
+  created_at: string;
+}
 
-const getField = (data: Json, key: string): string => {
-  if (data && typeof data === "object" && !Array.isArray(data)) {
-    const val = (data as Record<string, Json | undefined>)[key];
-    if (typeof val === "string") return val;
-    if (typeof val === "number") return String(val);
-  }
-  return "";
-};
-
-const getOriginDestination = (data: Json, opType: string) => {
-  if (opType === "transportar") {
-    const ruta = data && typeof data === "object" && !Array.isArray(data) ? (data as Record<string, Json | undefined>).ruta : null;
-    return {
-      origen: ruta ? getField(ruta as Json, "origen") : "",
-      destino: ruta ? getField(ruta as Json, "destino") : "",
-    };
-  }
-  return { origen: getField(data, "origen"), destino: getField(data, "destino") };
-};
+const CATEGORIES = [
+  { value: "", label: "Todas" },
+  { value: "transportar", label: "Transportar" },
+  { value: "dar-carga", label: "Dar carga" },
+  { value: "viajar", label: "Viajar" },
+];
 
 const Tablero = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
   const [publications, setPublications] = useState<Publication[]>([]);
+  const [myPubs, setMyPubs] = useState<MyPub[]>([]);
+  const [myPubsOpen, setMyPubsOpen] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
   const [filters, setFilters] = useState<PublicationFilters>(EMPTY_FILTERS);
+  const [view, setView] = useState<"list" | "map">("list");
   const toastShownRef = useRef(false);
 
   const fetchPublications = async () => {
-    setLoading(true);
-    const { data, error } = await supabase
+    setError(false);
+    const { data, error: fetchError } = await supabase
       .from("publications")
       .select("id, operation_type, data, created_at, status, user_id")
       .eq("status", "active")
       .order("created_at", { ascending: false });
 
-    if (error || !data) {
+    if (fetchError || !data) {
+      setError(true);
       setLoading(false);
       return;
     }
@@ -90,6 +91,17 @@ const Tablero = () => {
     setLoading(false);
   };
 
+  const fetchMyPubs = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("publications")
+      .select("id, operation_type, data, created_at")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .order("created_at", { ascending: false });
+    setMyPubs((data as MyPub[]) || []);
+  };
+
   const fetchPendingCount = async () => {
     if (!user) return;
     const { data: matchData } = await supabase
@@ -104,23 +116,27 @@ const Tablero = () => {
           .select("id, user_id")
           .in("id", pubIds);
         const myPubIds = new Set(pubs?.filter((p) => p.user_id === user.id).map((p) => p.id) ?? []);
-        const count = matchData.filter((m) => myPubIds.has(m.publication_id)).length;
-        setPendingCount(count);
+        setPendingCount(matchData.filter((m) => myPubIds.has(m.publication_id)).length);
       }
     }
+  };
+
+  const handleRefresh = async () => {
+    await Promise.all([fetchPublications(), fetchPendingCount(), fetchMyPubs()]);
   };
 
   useEffect(() => {
     fetchPublications();
     fetchPendingCount();
-  }, []);
+    fetchMyPubs();
+  }, [user]);
 
   useEffect(() => {
     if (pendingCount > 0 && !toastShownRef.current) {
       toastShownRef.current = true;
       toast({
         title: `Tenés ${pendingCount} solicitud${pendingCount > 1 ? "es" : ""} de match pendiente${pendingCount > 1 ? "s" : ""}`,
-        description: "Tocá la campana 🔔 para revisarlas.",
+        description: "Revisalas en la pestaña Matches.",
       });
     }
   }, [pendingCount]);
@@ -146,104 +162,239 @@ const Tablero = () => {
     });
   }, [publications, filters]);
 
-  const formatDate = (iso: string) => {
-    const d = new Date(iso);
-    return d.toLocaleDateString("es-AR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
-  };
+  const openDetail = (id: string) => transitionNavigate(navigate, `/publicacion/${id}`);
 
-  const filterSlot = (
-    <TableroFilters
-      filters={filters}
-      onApply={setFilters}
-      origins={origins}
-      destinations={destinations}
-    />
+  const controls = (
+    <div className="glass border-b border-border/60 px-4 pt-3 pb-2.5 sm:px-6">
+      <div className="mx-auto w-full max-w-lg space-y-2.5">
+        {/* Category rail */}
+        <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1">
+          {CATEGORIES.map((c) => {
+            const active = filters.operationType === c.value;
+            return (
+              <button
+                key={c.value || "all"}
+                onClick={() => setFilters((f) => ({ ...f, operationType: c.value }))}
+                className={cn(
+                  "shrink-0 rounded-full border px-4 py-1.5 text-sm font-medium transition-colors tap-scale",
+                  active
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-border bg-card text-muted-foreground"
+                )}
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+        {/* Filter pill + view toggle */}
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <TableroFilters filters={filters} onApply={setFilters} origins={origins} destinations={destinations} />
+          </div>
+          <SegmentedControl
+            className="w-[148px] shrink-0"
+            options={[{ value: "list", label: "Lista" }, { value: "map", label: "Mapa" }]}
+            value={view}
+            onChange={setView}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const listContent = (
+    <div className="px-4 pb-6 sm:px-6">
+      <div className="mx-auto w-full max-w-lg pt-3">
+        <div className="mb-3 flex items-baseline justify-between px-1">
+          <h1 className="text-xl font-bold tracking-tight text-foreground">Publicaciones</h1>
+          <p className="text-xs text-muted-foreground">
+            {filtered.length} activa{filtered.length !== 1 ? "s" : ""}
+            {filtered.length !== publications.length && ` de ${publications.length}`}
+          </p>
+        </div>
+
+        {/* Mis publicaciones activas */}
+        {myPubs.length > 0 && (
+          <div className="mb-4 rounded-3xl border border-border bg-card shadow-card overflow-hidden">
+            <button
+              onClick={() => setMyPubsOpen((o) => !o)}
+              className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-muted/50 tap-scale"
+            >
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+                  <User className="h-3.5 w-3.5 text-primary" />
+                </div>
+                <span className="text-sm font-semibold text-foreground">
+                  Tus publicaciones activas
+                </span>
+                <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary">
+                  {myPubs.length}
+                </span>
+              </div>
+              <ChevronDown
+                className={cn(
+                  "h-4 w-4 text-muted-foreground transition-transform duration-200",
+                  myPubsOpen ? "rotate-180" : "rotate-0"
+                )}
+              />
+            </button>
+
+            {myPubsOpen && (
+              <div className="divide-y divide-border border-t border-border">
+                {myPubs.map((pub) => {
+                  const config = getOperationMeta(pub.operation_type);
+                  const Icon = config.icon;
+                  const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
+                  const frecuencia = formatFrecuencia(pub.data);
+                  const fecha = getField(pub.data, "fecha");
+                  const when = frecuencia || fecha;
+                  return (
+                    <button
+                      key={pub.id}
+                      onClick={() => openDetail(pub.id)}
+                      className="relative w-full px-4 py-3.5 text-left transition-colors hover:bg-muted/40 active:bg-muted/70 tap-scale"
+                    >
+                      {/* "Tuya" badge */}
+                      <span className="absolute right-3 top-3 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                        Tuya
+                      </span>
+                      <div className="flex items-center gap-3 pr-12">
+                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${config.gradient}`}>
+                          <Icon className="h-5 w-5 text-primary-foreground" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <span className="text-sm font-semibold text-foreground">{config.label}</span>
+                          {(origen || destino) && (
+                            <p className="truncate text-xs text-muted-foreground">
+                              {origen || "—"} → {destino || "—"}
+                            </p>
+                          )}
+                          {when && (
+                            <div className="mt-0.5 flex items-center gap-1 text-[11px] text-muted-foreground">
+                              <Calendar className="h-3 w-3" />
+                              {when}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-32 animate-pulse rounded-3xl bg-muted" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+              <WifiOff className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">No pudimos cargar las publicaciones</p>
+            <p className="mt-1 text-xs text-muted-foreground">Revisá tu conexión e intentá de nuevo.</p>
+            <Button className="mt-5 rounded-full" onClick={() => { setLoading(true); fetchPublications(); }}>
+              Reintentar
+            </Button>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+              <Inbox className="h-8 w-8 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {publications.length === 0 ? "No hay publicaciones activas" : "Sin resultados"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {publications.length === 0 ? "Sé el primero en publicar" : "Probá ajustando los filtros"}
+            </p>
+            {publications.length === 0 ? (
+              <Button className="mt-5 rounded-full" onClick={() => navigate("/seleccionar-operacion")}>
+                Crear publicación
+              </Button>
+            ) : (
+              <Button variant="outline" className="mt-5 rounded-full" onClick={() => setFilters(EMPTY_FILTERS)}>
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="space-y-3.5">
+            {filtered.map((pub, i) => {
+              const config = getOperationMeta(pub.operation_type);
+              const Icon = config.icon;
+              const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
+              const frecuencia = formatFrecuencia(pub.data);
+              const fecha = getField(pub.data, "fecha");
+              const when = frecuencia || fecha;
+
+              return (
+                <Card
+                  key={pub.id}
+                  onPointerDown={() => prefetch(loadDetalle)}
+                  onClick={() => openDetail(pub.id)}
+                  className="cursor-pointer overflow-hidden rounded-3xl border-border shadow-card transition-all animate-fade-in hover:shadow-card-hover active:scale-[0.98]"
+                  style={{ animationDelay: `${Math.min(i, 8) * 40}ms` }}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${config.gradient}`}>
+                        <Icon className="h-6 w-6 text-primary-foreground" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-semibold text-foreground">{config.label}</span>
+                          <span className="shrink-0 text-[11px] text-muted-foreground">{formatRelative(pub.created_at)}</span>
+                        </div>
+                        <p className="truncate text-[11px] text-muted-foreground">por {pub.profile_name}</p>
+                      </div>
+                    </div>
+
+                    {(origen || destino) && (
+                      <div className="mt-3 rounded-2xl bg-muted/60 px-3.5 py-3">
+                        <RoutePreview origen={origen} destino={destino} />
+                      </div>
+                    )}
+
+                    {when && (
+                      <div className="mt-2.5 flex items-center gap-1.5 px-1 text-xs text-muted-foreground">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {when}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </div>
   );
 
   return (
-    <AppLayout pendingCount={pendingCount} onRefresh={fetchPublications} filterSlot={filterSlot}>
-      <div className="px-4 sm:px-6 py-5 sm:py-6">
-        <div className="mx-auto w-full max-w-lg">
-          <div className="mb-4 flex items-center justify-between">
-            <div>
-              <h1 className="text-lg font-bold text-foreground">Publicaciones</h1>
-              <p className="text-xs text-muted-foreground">
-                {filtered.length} activa{filtered.length !== 1 ? "s" : ""}
-                {filtered.length !== publications.length && ` de ${publications.length}`}
-              </p>
-            </div>
-          </div>
-
-          {loading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-28 animate-pulse rounded-2xl bg-muted" />
-              ))}
-            </div>
-          ) : filtered.length === 0 ? (
-            <div className="py-16 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
-                <Package className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <p className="text-sm font-medium text-foreground">
-                {publications.length === 0 ? "No hay publicaciones activas" : "Sin resultados"}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {publications.length === 0 ? "Sé el primero en publicar" : "Probá ajustando los filtros"}
-              </p>
-              {publications.length === 0 && (
-                <Button className="mt-5 rounded-full" onClick={() => navigate("/seleccionar-operacion")}>
-                  Crear publicación
-                </Button>
-              )}
-            </div>
+    <AppLayout pendingCount={pendingCount}>
+      <div className="flex h-full flex-col">
+        {controls}
+        <div className="min-h-0 flex-1">
+          {view === "map" ? (
+            <Suspense
+              fallback={
+                <div className="flex h-full items-center justify-center">
+                  <Loader2 className="h-7 w-7 animate-spin text-primary" />
+                </div>
+              }
+            >
+              <PublicationsMap publications={filtered} onSelect={openDetail} />
+            </Suspense>
           ) : (
-            <div className="space-y-3">
-              {filtered.map((pub) => {
-                const config = operationConfig[pub.operation_type] || operationConfig.viajar;
-                const Icon = config.icon;
-                const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
-                const frecuencia = getField(pub.data, "frecuencia");
-                const fecha = getField(pub.data, "fecha");
-
-                return (
-                  <Card key={pub.id} className="overflow-hidden border-border rounded-2xl shadow-card hover:shadow-card-hover transition-all cursor-pointer active:scale-[0.98]" onClick={() => navigate(`/publicacion/${pub.id}`)}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${config.gradient}`}>
-                          <Icon className="h-5 w-5 text-primary-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-2">
-                            <Badge variant="secondary" className="text-[10px] font-medium rounded-full px-2.5">
-                              {config.label}
-                            </Badge>
-                            <span className="text-[10px] text-muted-foreground shrink-0">{formatDate(pub.created_at)}</span>
-                          </div>
-                          {(origen || destino) && (
-                            <div className="mt-2 flex items-center gap-1.5 text-sm text-foreground">
-                              <MapPin className="h-3.5 w-3.5 shrink-0 text-primary" />
-                              <span className="truncate font-medium">{origen || "—"}</span>
-                              <ArrowRight className="h-3 w-3 shrink-0 text-muted-foreground" />
-                              <span className="truncate font-medium">{destino || "—"}</span>
-                            </div>
-                          )}
-                          <div className="mt-2 flex items-center justify-between">
-                            <span className="text-[11px] text-muted-foreground truncate">por {pub.profile_name}</span>
-                            {(frecuencia || fecha) && (
-                              <span className="flex items-center gap-1 text-[11px] text-muted-foreground shrink-0">
-                                <Calendar className="h-3 w-3" />
-                                {frecuencia || fecha}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+            <PullToRefresh onRefresh={handleRefresh}>{listContent}</PullToRefresh>
           )}
         </div>
       </div>

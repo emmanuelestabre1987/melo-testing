@@ -1,95 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 @layer base {
   :root {
-    /* Clean white base — Andiamo style */
+    /* Melo Envíos — monochrome black & white brand */
     --background: 0 0% 100%;
-    --foreground: 220 14% 10%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 14% 10%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 14% 10%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Vibrant Orange — CTA / primary (Andiamo signature) */
-    --primary: 24 95% 53%;
-    --primary-foreground: 0 0% 100%;
+    /* Near-black — primary (logo mark) */
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
 
-    /* Soft gray for secondary */
-    --secondary: 220 13% 95%;
-    --secondary-foreground: 220 14% 35%;
+    /* Soft neutral gray for secondary */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
 
     /* Muted / subtle backgrounds */
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 10% 46%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 42%;
 
-    /* Accent — same orange family, lighter */
-    --accent: 24 90% 96%;
-    --accent-foreground: 24 95% 40%;
+    /* Accent — light neutral */
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 12%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 24 95% 53%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 9%;
 
     --radius: 0.875rem;
 
     --header-background: 0 0% 100%;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 14% 10%;
-    --sidebar-primary: 24 95% 53%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 24 90% 96%;
-    --sidebar-accent-foreground: 24 95% 40%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 24 95% 53%;
+    --sidebar-foreground: 0 0% 9%;
+    --sidebar-primary: 0 0% 9%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 12%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 9%;
   }
 
   .dark {
-    --background: 220 16% 8%;
-    --foreground: 220 10% 94%;
+    --background: 0 0% 7%;
+    --foreground: 0 0% 96%;
 
-    --card: 220 14% 11%;
-    --card-foreground: 220 10% 94%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 220 14% 11%;
-    --popover-foreground: 220 10% 94%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 24 90% 50%;
-    --primary-foreground: 0 0% 100%;
+    /* Inverted — near-white primary on dark */
+    --primary: 0 0% 96%;
+    --primary-foreground: 0 0% 9%;
 
-    --secondary: 220 12% 18%;
-    --secondary-foreground: 220 10% 70%;
+    --secondary: 0 0% 16%;
+    --secondary-foreground: 0 0% 80%;
 
-    --muted: 220 12% 16%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 58%;
 
-    --accent: 24 40% 16%;
-    --accent-foreground: 24 80% 70%;
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 92%;
 
-    --destructive: 0 62% 30%;
+    --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 12% 20%;
-    --input: 220 12% 20%;
-    --ring: 24 90% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 0 0% 83%;
 
-    --sidebar-background: 220 16% 8%;
-    --sidebar-foreground: 220 10% 94%;
-    --sidebar-primary: 24 90% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 24 30% 14%;
-    --sidebar-accent-foreground: 24 60% 70%;
-    --sidebar-border: 220 12% 20%;
-    --sidebar-ring: 24 90% 50%;
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 96%;
+    --sidebar-primary: 0 0% 96%;
+    --sidebar-primary-foreground: 0 0% 9%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 92%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 0 0% 83%;
   }
 }
 
@@ -98,26 +99,67 @@
     @apply border-border;
   }
 
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', system-ui, sans-serif;
+    /* Remove the grey flash when tapping interactive elements on mobile */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent iOS from zooming in when focusing form fields:
+     Safari zooms whenever a field's font-size is below 16px. */
+  @media (pointer: coarse) {
+    input,
+    textarea,
+    select {
+      font-size: 16px;
+    }
+  }
+
+  /* Respect users who prefer less motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
 @layer utilities {
-  /* Orange gradient for CTAs */
+  /* Monochrome tile gradients — subtle tonal variation per operation type */
   .gradient-primary {
-    background: linear-gradient(135deg, hsl(24 95% 53%), hsl(28 90% 58%));
+    background: linear-gradient(135deg, hsl(0 0% 13%), hsl(0 0% 27%));
   }
 
-  /* Warm secondary gradient */
   .gradient-warm {
-    background: linear-gradient(135deg, hsl(24 80% 60%), hsl(30 85% 65%));
+    background: linear-gradient(135deg, hsl(0 0% 22%), hsl(0 0% 37%));
   }
 
-  /* Blue accent gradient */
   .gradient-cta {
-    background: linear-gradient(135deg, hsl(210 90% 50%), hsl(210 80% 60%));
+    background: linear-gradient(135deg, hsl(0 0% 32%), hsl(0 0% 47%));
+  }
+
+  /* In dark mode the icons flip to near-black (primary-foreground),
+     so the tiles become light to preserve contrast. */
+  .dark .gradient-primary {
+    background: linear-gradient(135deg, hsl(0 0% 94%), hsl(0 0% 82%));
+  }
+
+  .dark .gradient-warm {
+    background: linear-gradient(135deg, hsl(0 0% 86%), hsl(0 0% 74%));
+  }
+
+  .dark .gradient-cta {
+    background: linear-gradient(135deg, hsl(0 0% 78%), hsl(0 0% 66%));
   }
 
   .shadow-card {
@@ -132,6 +174,28 @@
     mix-blend-mode: multiply;
     filter: contrast(1.02);
   }
+
+  /* Subtle frosted-glass surface — Airbnb-style sticky bars */
+  .glass {
+    background: hsl(var(--background) / 0.8);
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+  }
+
+  /* Hide scrollbars on horizontal scroll rows while keeping scroll */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Consistent press feedback for tappable surfaces */
+  .tap-scale {
+    @apply transition-transform duration-150 active:scale-[0.97];
+    touch-action: manipulation;
+  }
 }
 
 @keyframes sierras-sway {
@@ -139,7 +203,40 @@
   50% { transform: translateX(-8px); }
 }
 
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes sheet-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Safe area for mobile devices with notches/home indicators */
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Spinner used while pull-to-refresh is releasing */
+@keyframes ptr-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* View Transitions — smooth crossfade between routes */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.28s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
 }

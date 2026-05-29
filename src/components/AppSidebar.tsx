@@ -1,4 +1,4 @@
-import { LayoutDashboard, Plus, Bell, Package, Truck, Users, LogOut } from "lucide-react";
+import { LayoutDashboard, Plus, Bell, Package, Truck, Users, User, LogOut } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,6 +20,7 @@ const mainItems = [
   { title: "Tablero", url: "/tablero", icon: LayoutDashboard },
   { title: "Nueva publicación", url: "/seleccionar-operacion", icon: Plus },
   { title: "Mis matches", url: "/mis-matches", icon: Bell },
+  { title: "Perfil", url: "/perfil", icon: User },
 ];
 
 const operationItems = [

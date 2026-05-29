@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
-import { MapPin, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Navigation } from "lucide-react";
 
 interface NominatimResult {
   place_id: number;
@@ -14,12 +14,15 @@ interface LocationAutocompleteProps {
   onChange: (value: string, coords?: { lat: number; lon: number }) => void;
   placeholder?: string;
   label?: string;
+  enableCurrentLocation?: boolean;
 }
 
-const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationAutocompleteProps) => {
+const LocationAutocomplete = ({ value, onChange, placeholder, label, enableCurrentLocation }: LocationAutocompleteProps) => {
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [geoError, setGeoError] = useState("");
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +40,6 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
         setOpen(true);
       }
     } catch {
-      // Still set coords even if reverse fails
       onChange(`${lat}, ${lon}`, { lat, lon });
     } finally {
       setLoading(false);
@@ -45,7 +47,6 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
   }, [onChange]);
 
   const search = useCallback(async (query: string) => {
-    // Check if input is coordinates
     const match = query.trim().match(coordsRegex);
     if (match) {
       const lat = parseFloat(match[1]);
@@ -87,6 +88,36 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
     setSuggestions([]);
   };
 
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      setGeoError("Tu navegador no soporta geolocalización");
+      return;
+    }
+    setGeoError("");
+    setGeoLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude: lat, longitude: lon } = pos.coords;
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+          );
+          const data = await res.json();
+          onChange(data.display_name || `${lat}, ${lon}`, { lat, lon });
+        } catch {
+          onChange(`${lat.toFixed(4)}, ${lon.toFixed(4)}`, { lat, lon });
+        } finally {
+          setGeoLoading(false);
+        }
+      },
+      () => {
+        setGeoError("No pudimos obtener tu ubicación. Revisá los permisos.");
+        setGeoLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -111,6 +142,24 @@ const LocationAutocomplete = ({ value, onChange, placeholder, label }: LocationA
         />
         {loading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />}
       </div>
+
+      {enableCurrentLocation && (
+        <>
+          <button
+            type="button"
+            onClick={useMyLocation}
+            disabled={geoLoading}
+            className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-primary disabled:opacity-50 tap-scale"
+          >
+            {geoLoading
+              ? <Loader2 className="h-3 w-3 animate-spin" />
+              : <Navigation className="h-3 w-3" />}
+            {geoLoading ? "Obteniendo ubicación..." : "Usar mi ubicación actual"}
+          </button>
+          {geoError && <p className="mt-1 text-xs text-destructive">{geoError}</p>}
+        </>
+      )}
+
       {open && suggestions.length > 0 && (
         <ul className="absolute z-[9999] mt-1 w-full bg-popover border border-border rounded-md shadow-xl max-h-48 overflow-y-auto">
           {suggestions.map((s) => (

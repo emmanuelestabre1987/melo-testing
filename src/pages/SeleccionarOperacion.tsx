@@ -48,11 +48,11 @@ const SeleccionarOperacion = () => {
               <button
                 key={op.id}
                 onClick={() => navigate(op.path)}
-                className="group flex w-full items-center gap-4 rounded-2xl bg-card border border-border p-4 sm:p-5 text-left shadow-card transition-all hover:shadow-card-hover hover:border-primary/30 active:scale-[0.98]"
-                style={{ animationDelay: `${i * 100}ms` }}
+                className="group flex w-full items-center gap-4 rounded-3xl bg-card border border-border p-5 text-left shadow-card transition-all animate-fade-in hover:shadow-card-hover hover:border-primary/30 active:scale-[0.98]"
+                style={{ animationDelay: `${i * 80}ms` }}
               >
-                <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${op.gradient}`}>
-                  <op.icon className="h-6 w-6 text-primary-foreground" />
+                <div className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ${op.gradient}`}>
+                  <op.icon className="h-7 w-7 text-primary-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-sm font-semibold text-foreground">{op.title}</h3>
