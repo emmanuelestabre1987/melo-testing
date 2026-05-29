@@ -47,29 +47,9 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    rollupOptions: {
-      output: {
-        // Split heavy third-party libs into long-term-cacheable chunks.
-        manualChunks(id) {
-          if (!id.includes("node_modules")) return;
-          if (id.includes("leaflet")) return "leaflet";
-          if (id.includes("recharts") || id.includes("/d3-")) return "charts";
-          if (id.includes("@supabase")) return "supabase";
-          // Keep React core, react-dom, scheduler and router in ONE chunk.
-          // If react core lands in a different chunk than react-dom, react-dom
-          // reads React.__SECRET_INTERNALS_... before React is defined → blank page.
-          if (
-            id.includes("/react/") ||
-            id.includes("/react-dom/") ||
-            id.includes("/react/jsx-runtime") ||
-            id.includes("/react-router") ||
-            id.includes("/scheduler/")
-          )
-            return "react-vendor";
-          return "vendor";
-        },
-      },
-    },
-  },
+  // NOTE: no custom manualChunks here on purpose. Hand-splitting React into a
+  // separate chunk from its dependents (Radix, react-hook-form, router, etc.)
+  // caused cross-chunk load-order crashes in production (React undefined when a
+  // vendor lib calls createContext / reads __SECRET_INTERNALS). Vite's default
+  // chunking resolves the dependency graph order correctly — leave it to Vite.
 }));
