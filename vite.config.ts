@@ -56,7 +56,17 @@ export default defineConfig(({ mode }) => ({
           if (id.includes("leaflet")) return "leaflet";
           if (id.includes("recharts") || id.includes("/d3-")) return "charts";
           if (id.includes("@supabase")) return "supabase";
-          if (id.includes("react-router") || id.includes("react-dom") || id.includes("/scheduler/")) return "react-vendor";
+          // Keep React core, react-dom, scheduler and router in ONE chunk.
+          // If react core lands in a different chunk than react-dom, react-dom
+          // reads React.__SECRET_INTERNALS_... before React is defined → blank page.
+          if (
+            id.includes("/react/") ||
+            id.includes("/react-dom/") ||
+            id.includes("/react/jsx-runtime") ||
+            id.includes("/react-router") ||
+            id.includes("/scheduler/")
+          )
+            return "react-vendor";
           return "vendor";
         },
       },
