@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Inbox, WifiOff, Loader2, ChevronDown, User } from "lucide-react";
+import { Calendar, Inbox, WifiOff, Loader2, ChevronDown, User, Handshake, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import type { Json } from "@/integrations/supabase/types";
@@ -15,12 +15,14 @@ import TableroFilters, { EMPTY_FILTERS, type PublicationFilters } from "@/compon
 import { getField, getOriginDestination, getCoords, getOperationMeta, formatRelative, formatFrecuencia } from "@/lib/publications";
 import { transitionNavigate, prefetch } from "@/lib/viewTransition";
 import { cn } from "@/lib/utils";
+import MatchDrawer from "@/components/MatchDrawer";
 
 const PublicationsMap = lazy(() => import("@/components/PublicationsMap"));
 const loadDetalle = () => import("./PublicacionDetalle");
 
 interface Publication {
   id: string;
+  user_id: string;
   operation_type: string;
   data: Json;
   created_at: string;
@@ -54,6 +56,9 @@ const Tablero = () => {
   const [pendingCount, setPendingCount] = useState(0);
   const [filters, setFilters] = useState<PublicationFilters>(EMPTY_FILTERS);
   const [view, setView] = useState<"list" | "map">("list");
+  const [matchTarget, setMatchTarget] = useState<Publication | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const toastShownRef = useRef(false);
 
   const fetchPublications = async () => {
@@ -81,6 +86,7 @@ const Tablero = () => {
     setPublications(
       data.map((p) => ({
         id: p.id,
+        user_id: p.user_id,
         operation_type: p.operation_type,
         data: p.data,
         created_at: p.created_at,
@@ -141,6 +147,11 @@ const Tablero = () => {
     }
   }, [pendingCount]);
 
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchQuery.trim()), 200);
+    return () => clearTimeout(t);
+  }, [searchQuery]);
+
   const { origins, destinations } = useMemo(() => {
     const origSet = new Set<string>();
     const destSet = new Set<string>();
@@ -153,14 +164,22 @@ const Tablero = () => {
   }, [publications]);
 
   const filtered = useMemo(() => {
+    const q = debouncedSearch.toLowerCase();
     return publications.filter((pub) => {
       if (filters.operationType && pub.operation_type !== filters.operationType) return false;
       const { origen, destino } = getOriginDestination(pub.data, pub.operation_type);
       if (filters.origen && origen !== filters.origen) return false;
       if (filters.destino && destino !== filters.destino) return false;
+      if (q) {
+        const label = getOperationMeta(pub.operation_type).label.toLowerCase();
+        const haystack = [
+          origen, destino, pub.profile_name, label,
+        ].join(" ").toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
       return true;
     });
-  }, [publications, filters]);
+  }, [publications, filters, debouncedSearch]);
 
   const openDetail = (id: string) => transitionNavigate(navigate, `/publicacion/${id}`);
 
@@ -187,6 +206,27 @@ const Tablero = () => {
             );
           })}
         </div>
+        {/* Search bar */}
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Buscar por lugar, persona u operación…"
+            className="h-9 w-full rounded-full border border-border bg-card pl-8 pr-8 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              aria-label="Limpiar búsqueda"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          )}
+        </div>
+
         {/* Filter pill + view toggle */}
         <div className="flex items-center gap-2">
           <div className="min-w-0 flex-1">
@@ -319,7 +359,7 @@ const Tablero = () => {
                 Crear publicación
               </Button>
             ) : (
-              <Button variant="outline" className="mt-5 rounded-full" onClick={() => setFilters(EMPTY_FILTERS)}>
+              <Button variant="outline" className="mt-5 rounded-full" onClick={() => { setFilters(EMPTY_FILTERS); setSearchQuery(""); }}>
                 Limpiar filtros
               </Button>
             )}
@@ -368,6 +408,20 @@ const Tablero = () => {
                         {when}
                       </div>
                     )}
+
+                    {user && pub.user_id !== user.id && (
+                      <div className="mt-3 border-t border-border pt-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 w-full rounded-full text-xs"
+                          onClick={(e) => { e.stopPropagation(); setMatchTarget(pub); }}
+                        >
+                          <Handshake className="mr-1.5 h-3.5 w-3.5" />
+                          Hacer match
+                        </Button>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               );
@@ -398,6 +452,12 @@ const Tablero = () => {
           )}
         </div>
       </div>
+
+      <MatchDrawer
+        target={matchTarget}
+        open={!!matchTarget}
+        onOpenChange={(open) => { if (!open) setMatchTarget(null); }}
+      />
     </AppLayout>
   );
 };

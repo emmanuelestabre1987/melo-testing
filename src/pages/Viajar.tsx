@@ -1,6 +1,6 @@
 import { useState } from "react";
 import AppLayout from "@/components/AppLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import WizardLayout from "@/components/WizardLayout";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,8 +15,14 @@ import RouteMap from "@/components/RouteMap";
 
 interface Coords { lat: number; lon: number; }
 
+interface LocationState {
+  matchWith?: string;
+}
+
 const Viajar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const matchWith = (location.state as LocationState | null)?.matchWith;
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -38,22 +44,36 @@ const Viajar = () => {
       ...frecuencia,
       fecha: frecuencia.fecha ? frecuencia.fecha.toISOString() : undefined,
     };
-    const { error } = await supabase.from("publications").insert({
-      user_id: user!.id,
-      operation_type: "viajar",
-      data: JSON.parse(JSON.stringify({
-        cantidadPersonas,
-        frecuencia: frecuenciaData,
-        origen, origenCoords,
-        destino, destinoCoords,
-      })),
-    });
+    const { data: insertData, error } = await supabase
+      .from("publications")
+      .insert({
+        user_id: user!.id,
+        operation_type: "viajar",
+        data: JSON.parse(JSON.stringify({
+          cantidadPersonas,
+          frecuencia: frecuenciaData,
+          origen, origenCoords,
+          destino, destinoCoords,
+        })),
+      })
+      .select("id")
+      .single();
     setSaving(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    if (error || !insertData) {
+      toast({ title: "Error", description: error?.message, variant: "destructive" });
       return;
     }
-    navigate("/publicado");
+    if (matchWith) {
+      await supabase.from("matches").insert({
+        publication_id: matchWith,
+        matched_publication_id: insertData.id,
+        user_id: user!.id,
+      });
+      toast({ title: "¡Publicación creada y match enviado!" });
+      navigate("/mis-matches");
+    } else {
+      navigate("/publicado");
+    }
   };
 
   const isNextDisabled = () => {

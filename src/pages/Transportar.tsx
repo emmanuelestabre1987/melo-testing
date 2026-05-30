@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import AppLayout from "@/components/AppLayout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import WizardLayout from "@/components/WizardLayout";
 import OptionCard from "@/components/OptionCard";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,16 @@ import RouteMap from "@/components/RouteMap";
 
 interface Coords { lat: number; lon: number; }
 
+interface LocationState {
+  matchWith?: string;
+  tipoCarga?: string;
+}
+
 const Transportar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const locationState = (location.state as LocationState | null) ?? {};
+  const matchWith = locationState.matchWith;
   const { user } = useAuth();
   const { toast } = useToast();
   const [step, setStep] = useState(1);
@@ -28,8 +36,8 @@ const Transportar = () => {
   const [rutaDestino, setRutaDestino] = useState("");
   const [rutaDestinoCoords, setRutaDestinoCoords] = useState<Coords>();
 
-  // Paso 1 — Qué
-  const [tipoCarga, setTipoCarga] = useState("");
+  // Paso 1 — Qué (pre-seed tipoCarga from match context if provided)
+  const [tipoCarga, setTipoCarga] = useState(locationState.tipoCarga ?? "");
   const [tipoVehiculo, setTipoVehiculo] = useState("");
   const [espacio, setEspacio] = useState("");
   const [posicionPallet, setPosicionPallet] = useState("");
@@ -60,17 +68,31 @@ const Transportar = () => {
         destino: rutaDestino,
         destinoCoords: rutaDestinoCoords,
       };
-      const { error } = await supabase.from("publications").insert([{
-        user_id: user!.id,
-        operation_type: "transportar",
-        data: JSON.parse(JSON.stringify({ tipoCarga, ruta, tipoVehiculo, frecuencia: frecuenciaData, espacio, posicionPallet })),
-      }]);
+      const { data: insertData, error } = await supabase
+        .from("publications")
+        .insert([{
+          user_id: user!.id,
+          operation_type: "transportar",
+          data: JSON.parse(JSON.stringify({ tipoCarga, ruta, tipoVehiculo, frecuencia: frecuenciaData, espacio, posicionPallet })),
+        }])
+        .select("id")
+        .single();
       setSaving(false);
-      if (error) {
-        toast({ title: "Error", description: error.message, variant: "destructive" });
+      if (error || !insertData) {
+        toast({ title: "Error", description: error?.message, variant: "destructive" });
         return;
       }
-      navigate("/publicado");
+      if (matchWith) {
+        await supabase.from("matches").insert({
+          publication_id: matchWith,
+          matched_publication_id: insertData.id,
+          user_id: user!.id,
+        });
+        toast({ title: "¡Publicación creada y match enviado!" });
+        navigate("/mis-matches");
+      } else {
+        navigate("/publicado");
+      }
     } else {
       setStep(step + 1);
     }

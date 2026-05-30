@@ -7,17 +7,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import StatefulButton, { type ButtonStatus } from "@/components/StatefulButton";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-} from "@/components/ui/drawer";
-import { ArrowLeft, MapPin, ArrowRight, Calendar, Copy, Handshake, WifiOff, X, Loader2, Check, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, MapPin, ArrowRight, Calendar, Copy, Handshake, WifiOff, Loader2, Check, CheckCircle2 } from "lucide-react";
 import type { Json } from "@/integrations/supabase/types";
 import { getOriginDestination, getCoords, getOperationMeta, fieldLabels, formatFrecuencia } from "@/lib/publications";
+import MatchDrawer from "@/components/MatchDrawer";
 import { transitionNavigate } from "@/lib/viewTransition";
 import { haptic } from "@/lib/haptics";
 
@@ -32,13 +25,6 @@ interface PubRow {
   status: string;
 }
 
-interface MyPub {
-  id: string;
-  operation_type: string;
-  data: Json;
-  created_at: string;
-}
-
 const PublicacionDetalle = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -49,7 +35,6 @@ const PublicacionDetalle = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [matchDialogOpen, setMatchDialogOpen] = useState(false);
-  const [myPublications, setMyPublications] = useState<MyPub[]>([]);
   const [matchStatus, setMatchStatus] = useState<ButtonStatus>("idle");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [completeStatus, setCompleteStatus] = useState<ButtonStatus>("idle");
@@ -77,18 +62,6 @@ const PublicacionDetalle = () => {
 
   const goBack = () => transitionNavigate(navigate, "/tablero");
   const isOwner = !!user && !!pub && pub.user_id === user.id;
-
-  const handleMatchClick = async () => {
-    if (!user) return;
-    const { data } = await supabase
-      .from("publications")
-      .select("id, operation_type, data, created_at")
-      .eq("user_id", user.id)
-      .eq("status", "active")
-      .order("created_at", { ascending: false });
-    setMyPublications((data as MyPub[]) || []);
-    setMatchDialogOpen(true);
-  };
 
   const handleComplete = async () => {
     if (!pub) return;
@@ -124,27 +97,6 @@ const PublicacionDetalle = () => {
     haptic("warning");
     toast({ title: "Publicación eliminada" });
     navigate("/tablero");
-  };
-
-  const createMatch = async (myPubId?: string) => {
-    if (!user || !id) return;
-    // Respuesta inmediata
-    setMatchDialogOpen(false);
-    setMatchStatus("success");
-    haptic("success");
-    toast({ title: "¡Match enviado!", description: "Tu solicitud fue registrada." });
-    // Persistir en background
-    const { error } = await supabase.from("matches").insert({
-      publication_id: id,
-      matched_publication_id: myPubId || null,
-      user_id: user.id,
-    });
-    if (error) {
-      setMatchStatus("idle");
-      toast({ title: "No se pudo enviar el match", description: error.message, variant: "destructive" });
-      return;
-    }
-    setTimeout(() => setMatchStatus("idle"), 1800);
   };
 
   if (loading) {
@@ -293,7 +245,7 @@ const PublicacionDetalle = () => {
             <div className="mx-auto max-w-lg">
               <StatefulButton
                 status={matchStatus}
-                onClick={handleMatchClick}
+                onClick={() => setMatchDialogOpen(true)}
                 loadingText="Enviando..."
                 successText="¡Match enviado!"
                 className="h-14 w-full rounded-2xl text-base font-semibold tap-scale"
@@ -330,63 +282,15 @@ const PublicacionDetalle = () => {
         )}
 
         {/* Match bottom sheet */}
-        <Drawer open={matchDialogOpen} onOpenChange={setMatchDialogOpen}>
-          <DrawerContent className="max-h-[85vh]">
-            <DrawerHeader className="flex flex-row items-start justify-between text-left">
-              <div>
-                <DrawerTitle>Hacer match</DrawerTitle>
-                <DrawerDescription className="mt-1">
-                  Vinculá una de tus publicaciones o creá una nueva para conectar con esta oferta.
-                </DrawerDescription>
-              </div>
-              <DrawerClose asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0 rounded-full" aria-label="Cerrar">
-                  <X className="h-5 w-5" />
-                </Button>
-              </DrawerClose>
-            </DrawerHeader>
-
-            <div className="space-y-3 overflow-y-auto px-4 pb-4 safe-bottom">
-              {myPublications.length > 0 && (
-                <>
-                  <p className="text-sm font-medium text-foreground">Tus publicaciones activas</p>
-                  {myPublications.map((mp) => {
-                    const mConfig = getOperationMeta(mp.operation_type);
-                    const MIcon = mConfig.icon;
-                    const { origen: mO, destino: mD } = getOriginDestination(mp.data, mp.operation_type);
-                    return (
-                      <button
-                        key={mp.id}
-                        onClick={() => createMatch(mp.id)}
-                        disabled={matchStatus === "loading"}
-                        className="flex w-full items-center gap-3 rounded-2xl border border-border p-3.5 text-left transition-colors hover:bg-muted/50 disabled:opacity-50 tap-scale"
-                      >
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${mConfig.gradient}`}>
-                          <MIcon className="h-5 w-5 text-primary-foreground" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <span className="text-sm font-medium text-foreground">{mConfig.label}</span>
-                          {(mO || mD) && <p className="truncate text-xs text-muted-foreground">{mO} → {mD}</p>}
-                        </div>
-                      </button>
-                    );
-                  })}
-                  <div className="relative py-2">
-                    <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border" /></div>
-                    <div className="relative flex justify-center"><span className="bg-background px-2 text-xs text-muted-foreground">o</span></div>
-                  </div>
-                </>
-              )}
-              <Button
-                variant="outline"
-                className="h-12 w-full rounded-2xl"
-                onClick={() => { setMatchDialogOpen(false); navigate("/seleccionar-operacion"); }}
-              >
-                + Crear publicación para hacer match
-              </Button>
-            </div>
-          </DrawerContent>
-        </Drawer>
+        <MatchDrawer
+          target={pub}
+          open={matchDialogOpen}
+          onOpenChange={setMatchDialogOpen}
+          onMatchSent={() => {
+            setMatchStatus("success");
+            setTimeout(() => setMatchStatus("idle"), 1800);
+          }}
+        />
       </div>
     </AppLayout>
   );
