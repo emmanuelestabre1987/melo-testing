@@ -47,6 +47,12 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Source maps in prod so runtime crashes show real file:line instead of
+  // minified frames (index-*.js:41:26080). Temporary diagnostic — can be
+  // turned off once the current crash is pinned down.
+  build: {
+    sourcemap: true,
+  },
   // NOTE: no custom manualChunks here on purpose. Hand-splitting React into a
   // separate chunk from its dependents (Radix, react-hook-form, router, etc.)
   // caused cross-chunk load-order crashes in production (React undefined when a
